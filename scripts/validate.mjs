@@ -15,7 +15,7 @@ const paths = {
   codexPlugin: "plugins/terminal49/.codex-plugin/plugin.json",
   mcp: "plugins/terminal49/.mcp.json",
   cursorMcp: "plugins/terminal49/mcp.json",
-  skill: "plugins/terminal49/skills/terminal49-mcp/SKILL.md",
+  skill: "plugins/terminal49/skills/container-tracking/SKILL.md",
 };
 
 async function readJson(relativePath) {
@@ -153,7 +153,7 @@ for (const docPath of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "plugins/ter
 try {
   const skill = await readFile(resolve(root, paths.skill), "utf8");
   if (!skill.startsWith("---\n")) errors.push("skill must start with YAML frontmatter");
-  if (!/^name: terminal49-mcp$/m.test(skill)) errors.push("skill name must be terminal49-mcp");
+  if (!/^name: container-tracking$/m.test(skill)) errors.push("skill name must be container-tracking");
   if (!/^description: .+$/m.test(skill)) errors.push("skill must have a description");
   if (!skill.includes("search_container")) errors.push("skill must explain search_container");
   if (!skill.includes("track_container")) errors.push("skill must explain track_container");

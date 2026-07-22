@@ -15,7 +15,7 @@ This is a public, cross-platform plugin marketplace for Terminal49.
 
 ## Shared source of truth
 
-- `plugins/terminal49/skills/terminal49-mcp/SKILL.md` is the shared behavioral
+- `plugins/terminal49/skills/container-tracking/SKILL.md` is the shared behavioral
   guidance for all clients.
 - `plugins/terminal49/.mcp.json` and `plugins/terminal49/mcp.json` are the MCP
   adapters for Claude/Codex and Cursor respectively. Keep their server entries

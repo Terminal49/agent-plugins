@@ -11,7 +11,7 @@ This marketplace currently publishes one plugin:
 ## What the plugin provides
 
 - OAuth connection to `https://mcp.terminal49.com`
-- A shared `terminal49-mcp` skill for choosing and sequencing MCP tools
+- A shared `container-tracking` skill for choosing and sequencing MCP tools
 - Guidance for status, pickup readiness, holds, ETAs, routes, delays, and
   demurrage-risk questions
 - Guardrails around tracking-request creation, credentials, dates, and missing
@@ -84,7 +84,7 @@ to the authenticated Terminal49 account.
     ├── mcp.json                      # Cursor MCP adapter
     ├── README.md
     ├── assets/logo.svg               # Referenced by the Cursor manifest
-    └── skills/terminal49-mcp/SKILL.md
+    └── skills/container-tracking/SKILL.md
 ```
 
 The skill is shared. Each platform-specific manifest and MCP file is a thin

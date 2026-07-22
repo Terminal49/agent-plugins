@@ -13,7 +13,7 @@ API keys, access tokens, or one-time codes into chat.
 
 ## Included skill
 
-`terminal49-mcp` covers:
+`container-tracking` covers:
 
 - finding an existing container or shipment from a business identifier
 - starting a new tracking request when the user intends to do so

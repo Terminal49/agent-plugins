@@ -1,5 +1,5 @@
 ---
-name: terminal49-mcp
+name: container-tracking
 description: Use Terminal49 MCP tools to find, track, and investigate ocean container shipments. Use when a user asks about container status, shipment details, pickup readiness, terminal holds, ETAs, transport events, routes, delays, tracking requests, carrier support, or demurrage risk.
 ---
 
