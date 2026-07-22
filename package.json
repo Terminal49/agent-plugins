@@ -1,0 +1,13 @@
+{
+  "name": "terminal49-agent-plugins",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-platform Terminal49 agent plugin marketplace",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.mjs"
+  }
+}
