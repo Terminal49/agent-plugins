@@ -53,17 +53,35 @@ const [cursorMarketplace, claudeMarketplace, codexMarketplace, cursorPlugin, cla
     readJson(paths.cursorMcp),
   ]);
 
-await Promise.all(["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", paths.skill].map(requireFile));
+await Promise.all(
+  ["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", "plugins/terminal49/README.md", paths.skill].map(requireFile),
+);
 
 const plugins = [cursorPlugin, claudePlugin, codexPlugin].filter(Boolean);
+const pluginVersion = claudePlugin?.version ?? cursorPlugin?.version ?? codexPlugin?.version;
 const names = new Set(plugins.map((plugin) => plugin.name));
 const versions = new Set(plugins.map((plugin) => plugin.version));
 const descriptions = new Set(plugins.map((plugin) => plugin.description));
+const displayNames = new Set(plugins.map((plugin) => plugin.displayName));
+const homepages = new Set(plugins.map((plugin) => plugin.homepage));
+const repositories = new Set(plugins.map((plugin) => plugin.repository));
+const authors = new Set(plugins.map((plugin) => plugin.author?.name));
+const keywords = new Set(plugins.map((plugin) => JSON.stringify(plugin.keywords)));
 
 if (plugins.length !== 3) errors.push("all three plugin manifests must parse");
 if (names.size !== 1 || !names.has("terminal49")) errors.push("plugin manifest names must all be terminal49");
 if (versions.size !== 1) errors.push("plugin manifest versions must match");
 if (descriptions.size !== 1) errors.push("plugin manifest descriptions must match");
+if (displayNames.size !== 1 || !displayNames.has("Terminal49")) {
+  errors.push("plugin manifest displayNames must all be Terminal49");
+}
+if (homepages.size !== 1) errors.push("plugin manifest homepages must match");
+if (repositories.size !== 1) errors.push("plugin manifest repositories must match");
+if (authors.size !== 1) errors.push("plugin manifest author names must match");
+if (keywords.size !== 1) errors.push("plugin manifest keywords must match");
+if (codexPlugin && codexPlugin.interface?.displayName !== codexPlugin.displayName) {
+  errors.push("Codex interface displayName must match the manifest displayName");
+}
 
 for (const [label, marketplace] of [
   ["Cursor", cursorMarketplace],
@@ -77,7 +95,12 @@ for (const [label, marketplace] of [
     continue;
   }
   if (entry.source !== "./plugins/terminal49") errors.push(`${label} marketplace source is incorrect`);
-  if (entry.version !== plugins[0]?.version) errors.push(`${label} marketplace version must match plugin version`);
+  if (pluginVersion) {
+    if (entry.version !== pluginVersion) errors.push(`${label} marketplace version must match plugin version`);
+    if (marketplace.metadata?.version !== pluginVersion) {
+      errors.push(`${label} marketplace metadata.version must match plugin version`);
+    }
+  }
 }
 
 const codexEntry = codexMarketplace?.plugins?.find((plugin) => plugin.name === "terminal49");
@@ -113,6 +136,20 @@ if (JSON.stringify(cursorMcp) !== JSON.stringify(mcp)) {
   errors.push("Cursor and Claude/Codex MCP configurations must match");
 }
 
+if (cursorPlugin?.logo) await requireFile(`plugins/terminal49/${cursorPlugin.logo}`);
+
+for (const docPath of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "plugins/terminal49/README.md", paths.skill]) {
+  try {
+    const text = await readFile(resolve(root, docPath), "utf8");
+    const suffixed = text.match(/mcp\.terminal49\.com\/[^\s)`"']*/);
+    if (suffixed) {
+      errors.push(`${docPath} must reference ${connectorUrl} with no path (found ${suffixed[0]})`);
+    }
+  } catch {
+    // missing docs are reported by requireFile above
+  }
+}
+
 try {
   const skill = await readFile(resolve(root, paths.skill), "utf8");
   if (!skill.startsWith("---\n")) errors.push("skill must start with YAML frontmatter");
@@ -130,4 +167,6 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Validated Terminal49 plugin ${plugins[0].version} for Cursor, Claude Code, Codex, and Copilot CLI.`);
+console.log(
+  `Validated Terminal49 plugin ${pluginVersion} for Cursor, Claude Code, and Codex. Copilot CLI installs via the Claude marketplace.`,
+);

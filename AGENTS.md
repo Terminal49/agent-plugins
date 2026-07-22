@@ -21,14 +21,18 @@ This is a public, cross-platform plugin marketplace for Terminal49.
   adapters for Claude/Codex and Cursor respectively. Keep their server entries
   identical.
 - `.cursor-plugin`, `.claude-plugin`, and `.codex-plugin` manifests are thin
-  platform adapters. Keep their names, versions, descriptions, and paths in
-  sync.
+  platform adapters. Keep their shared fields in sync: `name`, `displayName`,
+  `version`, `description`, `author`, `homepage`, `repository`, `license`,
+  `keywords`, and the skills/MCP paths (`npm run validate` enforces this).
+  Platform-only fields may diverge: Cursor's `logo` and `category`, and Codex's
+  `interface` block (its `displayName` must still match the manifest).
 - Marketplace files must continue to point to `./plugins/terminal49`.
 
 ## Validation
 
-Run `npm run validate` after every change. When a supported client is installed,
-also use its native validator before publishing.
+Run `npm run validate` after every change. CI runs the same script on every
+push and pull request (`.github/workflows/validate.yml`). When a supported
+client is installed, also use its native validator before publishing.
 
 ## Releases
 

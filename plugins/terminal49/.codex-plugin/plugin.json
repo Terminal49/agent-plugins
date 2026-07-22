@@ -1,5 +1,6 @@
 {
   "name": "terminal49",
+  "displayName": "Terminal49",
   "version": "0.1.0",
   "description": "Track and investigate container shipments with Terminal49 MCP tools and workflow guidance.",
   "author": {

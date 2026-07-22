@@ -61,7 +61,7 @@ copilot plugin install terminal49@terminal49
 
 After connecting your Terminal49 account, ask your agent:
 
-- “Where is container CAIU2885402?”
+- “Where is container ABCU1234567?”
 - “Is this container ready for pickup, and are there any holds?”
 - “Explain what changed in this container's journey.”
 - “Show containers updated since yesterday and group them by status.”
@@ -82,6 +82,8 @@ to the authenticated Terminal49 account.
     ├── .cursor-plugin/plugin.json
     ├── .mcp.json                     # Claude and Codex MCP adapter
     ├── mcp.json                      # Cursor MCP adapter
+    ├── README.md
+    ├── assets/logo.svg               # Referenced by the Cursor manifest
     └── skills/terminal49-mcp/SKILL.md
 ```
 
@@ -96,6 +98,9 @@ Requires Node.js 22 or newer.
 ```sh
 npm run validate
 ```
+
+CI runs the same validation on every push and pull request via
+[`.github/workflows/validate.yml`](.github/workflows/validate.yml).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before changing the shared skill or
 platform manifests.
