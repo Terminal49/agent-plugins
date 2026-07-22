@@ -20,4 +20,4 @@ Thanks for improving the Terminal49 agent plugins.
 4. Test installation in any client affected by the change.
 
 Platform-specific behavior belongs in its adapter. Guidance that applies to all
-clients belongs in `plugins/terminal49/skills/terminal49-mcp/SKILL.md`.
+clients belongs in `plugins/terminal49/skills/container-tracking/SKILL.md`.

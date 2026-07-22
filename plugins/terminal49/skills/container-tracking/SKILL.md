@@ -1,13 +1,18 @@
 ---
-name: terminal49-mcp
-description: Use Terminal49 MCP tools to find, track, and investigate ocean container shipments. Use when a user asks about container status, shipment details, pickup readiness, terminal holds, ETAs, transport events, routes, delays, tracking requests, carrier support, or demurrage risk.
+name: container-tracking
+description: Find, track, and investigate ocean container shipments with Terminal49 MCP tools, written for logistics operators. Use when a user provides a container number, bill of lading, booking, or reference number, or asks about container status, location, pickup readiness, terminal holds, last free day, ETAs or ETA changes, dwell time, rail moves, inland destinations, transport events, routes, delays, tracking requests, carrier support, or demurrage and detention risk.
 ---
 
-# Terminal49 MCP
+# Container tracking (Terminal49 MCP)
 
-Use the Terminal49 MCP server for container and shipment questions. Prefer the
-smallest tool sequence that answers the question, and preserve the difference
-between observed data and inference.
+Use the Terminal49 MCP server for container and shipment questions. The user is
+usually a logistics operator, not a developer: answer in plain operational
+language, lead with what they should do or know, and prefer the smallest tool
+sequence that answers the question. Preserve the difference between observed
+data and inference.
+
+A bare identifier with no question ("CAIU1234567", "where is MSCU…") means:
+find it and report current status, location, and anything that needs attention.
 
 ## Before using tools
 
@@ -57,7 +62,7 @@ reference number. Detail tools require a Terminal49 UUID.
 | Pickup readiness, terminal availability, holds, or LFD | `search_container`, then `get_container` with `shipment` and `pod_terminal` |
 | What happened, where it moved, or delay analysis | `search_container`, then `get_container_transport_events` |
 | Full shipment and its containers | `search_container`, then `get_shipment_details` |
-| Multi-leg route, transshipment, vessels, or itinerary | `search_container`, then `get_container_route` |
+| Multi-leg route, rail leg, transshipment, or itinerary | `search_container`, then `get_container_route` |
 | Containers or shipments matching operational filters | `list_containers` or `list_shipments` |
 | Tracking-request status or audit | `list_tracking_requests` |
 | Supported carrier or SCAC lookup | `get_supported_shipping_lines` |
@@ -65,6 +70,57 @@ reference number. Detail tools require a Terminal49 UUID.
 Use the `terminal49://docs/mcp-query-guidance` resource when available for the
 server's current intent-to-tool playbooks. Use
 `terminal49://docs/milestone-glossary` when event terminology needs explanation.
+
+## What matters at each state
+
+Which attributes are worth reporting depends on where the container is in its
+lifecycle. Lead with the fields for the current state; skip fields that are not
+yet meaningful.
+
+| State | Lead with |
+| --- | --- |
+| Booked, before departure | ETD, POL, vessel and voyage, whether carrier data has started flowing |
+| On the water | POD ETA and any change to it, current vessel, transshipment ports |
+| Arrived at POD, not yet discharged | Actual arrival vs the last ETA, discharge status, holds already visible |
+| Discharged at the POD terminal | Availability, holds, last free day, days since discharge, terminal name |
+| Moving inland by rail | Rail departure and arrival events, destination ramp and its ETA, that pickup happens inland |
+| Available for pickup | Pickup location, LFD and remaining free days, confirmation that holds are cleared |
+| Picked up (full out) | Delivery status, empty-return deadline, whether the empty has been returned |
+
+## Risk signals to surface
+
+Check for these whenever the data is already in hand, and lead the answer with
+any that apply — even if the user only asked "where is it":
+
+- **ETA change** — the current ETA differs from earlier estimates in the
+  transport events. Report old vs new and the cumulative drift.
+- **Long dwell** — discharged 3 or more days ago and not picked up. State the
+  day count; treat it as urgent when the LFD is past or unknown.
+- **LFD pressure** — last free day is today, tomorrow, or past. This outranks
+  everything else in the summary.
+- **Active holds** — customs, freight, or terminal holds block pickup even when
+  the container shows as available. Name each hold type.
+- **Rolled or transshipped** — events show discharge and reload at an
+  intermediate port, or the vessel changed mid-route.
+- **Detention risk** — picked up but the empty has not been returned and the
+  return deadline is near or past.
+
+Label anything inferred (for example, dwell computed from a discharge date) as
+computed, and never present a risk as a confirmed charge.
+
+## Where pickup happens
+
+Do not assume pickup is at the port of discharge. Check the shipment
+destination and route:
+
+- If the shipment has an inland destination or the route/events show a rail
+  leg, pickup happens at the inland ramp or destination terminal — report that
+  location and the rail arrival ETA, not the POD availability.
+- If the container terminates at the POD, use `pod_terminal` data for
+  availability, holds, and LFD.
+- When it is unclear which applies, say so and check
+  `get_container_route` or the transport events for rail milestones before
+  answering.
 
 ## Efficient detail loading
 
@@ -88,10 +144,13 @@ leaves a material question unanswered.
   and `updated_after` in ISO 8601 form.
 - Use pagination instead of silently assuming the first page is complete.
 - State the filters and time boundary used in the answer.
+- For "what needs attention" requests, rank results by the risk signals above:
+  LFD pressure first, then holds, then dwell, then ETA changes.
 
 ## Interpret and present results
 
-1. Lead with the current answer: status, location, readiness, or risk.
+1. Lead with the operational answer: status, location, readiness, or risk —
+   then supporting detail.
 2. Separate actual timestamps from estimated timestamps and label each clearly.
 3. Preserve source time zones. If converting a time, state the target time zone.
 4. Call out terminal holds, customs issues, and pickup blockers explicitly.
@@ -110,8 +169,10 @@ leaves a material question unanswered.
 
 1. Resolve the identifier with `search_container`.
 2. Call `get_container` with `shipment` and `pod_terminal`.
-3. Summarize current status, terminal, availability, holds, and relevant dates.
-4. If the state is unclear, call `get_container_transport_events` for context.
+3. Determine the lifecycle state and where pickup happens (POD or inland).
+4. Summarize status, location, availability, holds, relevant dates, and any
+   risk signals.
+5. If the state is unclear, call `get_container_transport_events` for context.
 
 ### Delay investigation
 
@@ -124,8 +185,9 @@ leaves a material question unanswered.
 ### Demurrage-risk review
 
 1. Use `list_containers` with the narrowest known operational filters.
-2. Fetch `get_container` with `pod_terminal` for the candidates that need detail.
-3. Prioritize known pickup LFDs, active terminal holds, discharge state, and
-   availability.
+2. Fetch `get_container` with `pod_terminal` for the candidates that need
+   detail.
+3. Prioritize known pickup LFDs, active terminal holds, discharge state,
+   availability, and dwell days since discharge.
 4. Do not calculate fees unless the required tariff and timing inputs are
    present. Label any risk assessment separately from an actual charge.

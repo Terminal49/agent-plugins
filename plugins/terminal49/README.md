@@ -13,11 +13,17 @@ API keys, access tokens, or one-time codes into chat.
 
 ## Included skill
 
-`terminal49-mcp` covers:
+`container-tracking` is written for logistics operators and covers:
 
 - finding an existing container or shipment from a business identifier
 - starting a new tracking request when the user intends to do so
 - inspecting container, shipment, terminal, event, and route details
+- state-dependent answers: which attributes matter at each lifecycle stage,
+  from booking through empty return
+- surfacing risk signals: ETA changes, long terminal dwell, last-free-day
+  pressure, active holds, rolls, and detention
+- determining where pickup happens — the discharge port or an inland rail
+  destination
 - querying fleets with filters and pagination
 - presenting dates, holds, missing information, and paid-feature boundaries
 
