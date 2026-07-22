@@ -27,7 +27,7 @@ through the MCP client's OAuth flow.
 In Cursor chat, run:
 
 ```text
-/add-plugin https://github.com/dodeja/agent-plugins
+/add-plugin https://github.com/Terminal49/agent-plugins
 ```
 
 Then select and install **Terminal49**. Cursor will prompt you to connect the
@@ -36,14 +36,14 @@ MCP server when the plugin first needs it.
 ### Claude Code
 
 ```sh
-claude plugin marketplace add dodeja/agent-plugins
+claude plugin marketplace add Terminal49/agent-plugins
 claude plugin install terminal49@terminal49
 ```
 
 ### Codex
 
 ```sh
-codex plugin marketplace add dodeja/agent-plugins
+codex plugin marketplace add Terminal49/agent-plugins
 codex plugin add terminal49@terminal49
 ```
 
@@ -53,7 +53,7 @@ Copilot CLI can read the Claude-compatible marketplace included in this
 repository:
 
 ```sh
-copilot plugin marketplace add dodeja/agent-plugins
+copilot plugin marketplace add Terminal49/agent-plugins
 copilot plugin install terminal49@terminal49
 ```
 
