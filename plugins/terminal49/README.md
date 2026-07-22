@@ -1,7 +1,9 @@
 # Terminal49 plugin
 
 This plugin connects an agent to Terminal49's hosted MCP server and supplies a
-shared skill for reliable container-tracking workflows.
+shared skill for reliable container-tracking workflows. It is published from
+the [Terminal49/agent-plugins](https://github.com/Terminal49/agent-plugins)
+marketplace — see that README for installation instructions.
 
 ## Authentication
 
