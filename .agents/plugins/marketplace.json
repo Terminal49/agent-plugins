@@ -1,0 +1,20 @@
+{
+  "name": "terminal49",
+  "interface": {
+    "displayName": "Terminal49"
+  },
+  "plugins": [
+    {
+      "name": "terminal49",
+      "source": {
+        "source": "local",
+        "path": "./plugins/terminal49"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

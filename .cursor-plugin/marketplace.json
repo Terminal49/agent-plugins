@@ -1,0 +1,18 @@
+{
+  "name": "terminal49",
+  "owner": {
+    "name": "Terminal49"
+  },
+  "metadata": {
+    "description": "Terminal49 container-tracking tools and agent skills",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "terminal49",
+      "source": "./plugins/terminal49",
+      "description": "Use Terminal49 MCP tools to track and investigate container shipments",
+      "version": "0.1.0"
+    }
+  ]
+}

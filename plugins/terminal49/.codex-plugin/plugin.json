@@ -1,0 +1,35 @@
+{
+  "name": "terminal49",
+  "version": "0.1.0",
+  "description": "Track and investigate container shipments with Terminal49 MCP tools and workflow guidance.",
+  "author": {
+    "name": "Terminal49"
+  },
+  "homepage": "https://terminal49.com",
+  "repository": "https://github.com/dodeja/agent-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "container-tracking",
+    "logistics",
+    "mcp",
+    "ocean-freight",
+    "supply-chain"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Terminal49",
+    "shortDescription": "Track and investigate container shipments",
+    "longDescription": "Connect to Terminal49 and use guided workflows for container status, pickup readiness, holds, ETAs, routes, delays, and demurrage risk.",
+    "developerName": "Terminal49",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://terminal49.com",
+    "defaultPrompt": [
+      "Track a container or investigate the latest status of my shipments"
+    ]
+  }
+}
