@@ -1,6 +1,6 @@
 ---
 expect:
-  number: /MSKU7654321/i
+  number: /MSKU7654321/
 ---
 
 {
