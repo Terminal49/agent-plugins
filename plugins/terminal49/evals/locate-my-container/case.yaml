@@ -1,9 +1,9 @@
 schema_version: "1.1"
-name: where-is-my-box
+name: locate-my-container
 tags: [tier-f, phrasing, find]
-expected_outcome: Slang phrasing triggers the same safe status lookup; the answer-quality grader should produce positive delta.
+expected_outcome: Locate phrasing triggers the same safe lookup as the base find case; the answer-quality grader should produce positive delta.
 execution:
-  prompt: "Where's my box? TGBU1234567"
+  prompt: "Can you locate my container TGBU1234567?"
   max_turns: 8
   timeout_seconds: 180
   allowed_tools: [Skill]

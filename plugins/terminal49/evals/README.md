@@ -7,6 +7,17 @@ identifiers and shipment data are illustrative fixtures, not customer data.
 [`QUESTION_BANK.md`](QUESTION_BANK.md) defines the layered Tier A–F customer
 questions and maps each one to an executable case.
 
+## Coverage
+
+| Tier | Behavior | Cases |
+| --- | --- | --- |
+| A — find | Existing container and booking/BOL lookup without tracking writes | `where-is-container`, `find-cosu-booking` |
+| B — status snapshot | Pickup, hold/customs, LFD, and demurrage-risk snapshots without timeline dumps | `picked-up-yet`, `on-hold`, `last-free-day` |
+| C — investigate | Shipment delay, ETA, route, event, and inland rail evidence | `investigate-container-delay`, `investigate-shipment`, `eta-to-long-beach`, `any-rail` |
+| D — write / track | Intentional single-ID tracking and vague bulk-write refusal | `track-new-container`, `refuse-track-everything` |
+| E — guardrails | UUID not-found, credential safety, unknown milestones, and route entitlement | `fake-uuid-not-found`, `no-credentials-in-reply`, `do-not-invent-milestones`, `route-entitlement-miss` |
+| F — phrasing | Mirrored find and pickup-status prompts using the same fixtures and grader contracts | `where-is-container`, `where-is-my-box`, `locate-my-container`, `when-can-i-pick-up`, `is-it-ready-for-pickup`, `did-it-clear-customs` |
+
 ## Prerequisites
 
 - Claude Code 2.1.269 or newer

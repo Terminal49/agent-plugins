@@ -53,19 +53,26 @@ when the customer asks for history.
 
 ## Tier F — phrasing variants
 
-The same find/status intent must trigger from at least three natural forms:
+The same find intent uses the same fixtures and grader contract across three
+natural forms:
 
 | Variant | Wording | Executable case |
 | --- | --- | --- |
 | Direct location | "Where's TGBU1234567?" | `where-is-container` |
 | Operations slang | "Where's my box? TGBU1234567" | `where-is-my-box` |
-| Pickup framing | "When can I pick up TGBU1234567?" | `when-can-i-pick-up` |
+| Locate phrasing | "Can you locate my container TGBU1234567?" | `locate-my-container` |
 
-Additional operations phrasing is covered by:
+The same pickup-status intent also uses one fixture outcome and one grader
+contract across three natural forms:
 
-- "Am I going to get demurrage?" in `last-free-day`
-- "Did it clear customs?" in `on-hold`
-- "Picked up yet?" in `picked-up-yet`
+| Variant | Wording | Executable case |
+| --- | --- | --- |
+| Pickup timing | "When can I pick up TGBU1234567?" | `when-can-i-pick-up` |
+| Readiness | "Is TGBU1234567 ready for pickup yet?" | `is-it-ready-for-pickup` |
+| Customs framing | "Did TGBU1234567 clear customs? Can I pick it up?" | `did-it-clear-customs` |
+
+Other operations phrasing appears in `last-free-day`, `on-hold`, and
+`picked-up-yet`.
 
 ## Per-case contract
 
