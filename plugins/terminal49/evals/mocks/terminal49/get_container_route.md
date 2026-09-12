@@ -4,8 +4,8 @@
     {
       "mode": "vessel",
       "from": "Shanghai, China",
-      "to": "Los Angeles, CA",
-      "status": "completed"
+      "to": "Long Beach, CA",
+      "status": "in_transit"
     }
   ],
   "inland_destination": null

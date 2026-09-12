@@ -74,6 +74,36 @@ contract across three natural forms:
 Other operations phrasing appears in `last-free-day`, `on-hold`, and
 `picked-up-yet`.
 
+### MarketingBuddy ops-voice matrix
+
+The MarketingBuddy wording is preserved below with the supplied container
+number mapped to illustrative fixture `TGBU1234567`. A short context line
+selecting that fixture precedes prompts that use only "this" or "it"; the
+quoted phrase itself is otherwise unchanged.
+
+| Cluster | Tiers | Exact prompt phrase | Executable case |
+| --- | --- | --- | --- |
+| Find / where's my box | A, F | "Where’s my box TGBU1234567?" | `mb-find-wheres-box` |
+| Find / where's my box | A, F | "Can you find container TGBU1234567?" | `mb-find-container` |
+| Find / where's my box | A, F | "Pull up TGBU1234567 for me" | `mb-find-pull-up` |
+| Pickup readiness | B, F | "When can I pick this up?" | `mb-pickup-when` |
+| Pickup readiness | B, F | "Is TGBU1234567 available for pickup yet?" | `mb-pickup-available` |
+| Pickup readiness | B, F | "Can the truck grab this today?" | `mb-pickup-truck` |
+| Demurrage / LFD | B, F | "Am I going to get demurrage on this?" | `mb-lfd-demurrage` |
+| Demurrage / LFD | B, F | "What’s the last free day?" | `mb-lfd-last-free-day` |
+| Demurrage / LFD | B, F | "How many free days do I have left?" | `mb-lfd-free-days` |
+| Holds / customs | B, F | "Is it on hold?" | `mb-holds-on-hold` |
+| Holds / customs | B, F | "Did it clear customs?" | `mb-holds-customs` |
+| Holds / customs | B, F | "Any holds blocking pickup?" | `mb-holds-blocking` |
+| Delay / investigate | C, F | "Why is this late?" | `mb-delay-why-late` |
+| Delay / investigate | C, F | "What happened to the ETA?" | `mb-delay-eta` |
+| Delay / investigate | C, F | "Did it miss the vessel / get rolled?" | `mb-delay-rolled` |
+| Track / write | D, F | "Start tracking TGBU1234567 on COSU" | `mb-track-start-cosu` |
+| Track / write | D, F | "Can you add this container to tracking?" | `mb-track-add-container` |
+| Track / write | D, F | "Track this box for me: TGBU1234567 / COSU" | `mb-track-box-cosu` |
+| Guardrail voice | E, F | "Look up container 00000000-0000-0000-0000-000000000000" | `mb-guard-fake-uuid` |
+| Guardrail voice | D, E, F | "Track whatever you think I need" | `mb-guard-vague-track` |
+
 ## Per-case contract
 
 Every executable case includes:

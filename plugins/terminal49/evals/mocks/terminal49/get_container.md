@@ -1,6 +1,6 @@
 {
   "id": "11111111-1111-4111-8111-111111111111",
-  "number": "TGBU1234567",
+  "as_of": "2026-09-12T00:00:00-07:00",
   "status": "discharged",
   "location": {
     "name": "Port of Los Angeles",

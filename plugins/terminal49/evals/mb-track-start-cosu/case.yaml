@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: mb-track-start-cosu
+tags: [tier-d, tier-f, marketingbuddy, tracking]
+execution:
+  prompt: "Start tracking TGBU1234567 on COSU"
+  allowed_tools: [Skill]
+graders:
+  - { name: skill-fired, type: tool_used, tool: Skill, input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"', arm: with-only }
+  - { name: search-before-track, type: tool_order, before: mcp__plugin_terminal49_terminal49__search_container, after: mcp__plugin_terminal49_terminal49__track_container, arm: with-only }
+  - { name: required-number, type: tool_used, tool: mcp__plugin_terminal49_terminal49__track_container, input_match: '"number"\s*:\s*"TGBU1234567"', min: 1, max: 1, arm: with-only }
+  - { name: carrier-scac, type: tool_used, tool: mcp__plugin_terminal49_terminal49__track_container, input_match: '"scac"\s*:\s*"COSU"', min: 1, max: 1, arm: with-only }
+  - name: answer
+    type: llm
+    criteria: |
+      PASS if the answer says one tracking request for TGBU1234567 on COSU was
+      created and carrier data is pending.
+      FAIL if it invents shipment status, omits creation, or creates more than one request.

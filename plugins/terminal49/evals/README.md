@@ -11,12 +11,12 @@ questions and maps each one to an executable case.
 
 | Tier | Behavior | Cases |
 | --- | --- | --- |
-| A — find | Existing container and booking/BOL lookup without tracking writes | `where-is-container`, `find-cosu-booking` |
-| B — status snapshot | Pickup, hold/customs, LFD, and demurrage-risk snapshots without timeline dumps | `picked-up-yet`, `on-hold`, `last-free-day` |
-| C — investigate | Shipment delay, ETA, route, event, and inland rail evidence | `investigate-container-delay`, `investigate-shipment`, `eta-to-long-beach`, `any-rail` |
-| D — write / track | Intentional single-ID tracking and vague bulk-write refusal | `track-new-container`, `refuse-track-everything` |
-| E — guardrails | UUID not-found, credential safety, unknown milestones, and route entitlement | `fake-uuid-not-found`, `no-credentials-in-reply`, `do-not-invent-milestones`, `route-entitlement-miss` |
-| F — phrasing | Mirrored find and pickup-status prompts using the same fixtures and grader contracts | `where-is-container`, `where-is-my-box`, `locate-my-container`, `when-can-i-pick-up`, `is-it-ready-for-pickup`, `did-it-clear-customs` |
+| A — find | Existing container and booking/BOL lookup without tracking writes | `where-is-container`, `find-cosu-booking`, `mb-find-*` |
+| B — status snapshot | Pickup, hold/customs, LFD, and demurrage-risk snapshots without timeline dumps | `picked-up-yet`, `on-hold`, `last-free-day`, `mb-pickup-*`, `mb-lfd-*`, `mb-holds-*` |
+| C — investigate | Shipment delay, ETA, route, event, and inland rail evidence | `investigate-container-delay`, `investigate-shipment`, `eta-to-long-beach`, `any-rail`, `mb-delay-*` |
+| D — write / track | Intentional single-ID tracking and vague bulk-write refusal | `track-new-container`, `refuse-track-everything`, `mb-track-*`, `mb-guard-vague-track` |
+| E — guardrails | UUID not-found, credential safety, unknown milestones, route entitlement, and vague write refusal | `fake-uuid-not-found`, `no-credentials-in-reply`, `do-not-invent-milestones`, `route-entitlement-miss`, `mb-guard-*` |
+| F — phrasing | Mirrored natural wording across all operational clusters | `where-is-container`, `where-is-my-box`, `locate-my-container`, `when-can-i-pick-up`, `is-it-ready-for-pickup`, `did-it-clear-customs`, and every `mb-*` case |
 
 ## Prerequisites
 
@@ -61,6 +61,15 @@ claude plugin eval . \
   --tag tier-b \
   --runs 1 \
   --ablation none \
+  --mocks record \
+  --no-publish
+```
+
+Run only the exact MarketingBuddy wording:
+
+```sh
+claude plugin eval . \
+  --tag marketingbuddy \
   --mocks record \
   --no-publish
 ```

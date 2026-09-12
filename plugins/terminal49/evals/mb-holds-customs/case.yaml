@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: mb-holds-customs
+tags: [tier-b, tier-f, marketingbuddy, holds]
+execution:
+  prompt: |
+    I'm looking at TGBU1234567.
+
+    Did it clear customs?
+  allowed_tools: [Skill]
+graders:
+  - { name: skill-fired, type: tool_used, tool: Skill, input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"', arm: with-only }
+  - { name: snapshot-order, type: tool_order, before: mcp__plugin_terminal49_terminal49__search_container, after: mcp__plugin_terminal49_terminal49__get_container, arm: with-only }
+  - { name: no-timeline, type: tool_used, tool: mcp__plugin_terminal49_terminal49__get_container_transport_events, min: 0, max: 0, arm: with-only }
+  - name: answer
+    type: llm
+    criteria: |
+      PASS if the answer says an active customs hold blocks pickup and does not
+      invent other holds or clearance timing.
+      FAIL if it says holds are clear, omits pickup impact, or dumps a timeline.
