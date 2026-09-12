@@ -29,3 +29,9 @@ API keys, access tokens, or one-time codes into chat.
 
 The Terminal49 API and MCP implementation live in
 [Terminal49/API](https://github.com/Terminal49/API).
+
+## Plugin evals
+
+Behavioral eval cases use checked-in MCP mocks and never require the live
+Terminal49 service. See [`evals/README.md`](evals/README.md) for validation,
+mocked eval, baseline, and marketplace-submission guidance.
