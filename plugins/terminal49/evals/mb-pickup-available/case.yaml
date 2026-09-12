@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: mb-pickup-available
+tags: [tier-b, tier-f, marketingbuddy, pickup]
+execution:
+  prompt: "Is TGBU1234567 available for pickup yet?"
+  allowed_tools: [Skill]
+graders:
+  - { name: skill-fired, type: tool_used, tool: Skill, input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"', arm: with-only }
+  - { name: snapshot-order, type: tool_order, before: mcp__plugin_terminal49_terminal49__search_container, after: mcp__plugin_terminal49_terminal49__get_container, arm: with-only }
+  - { name: no-timeline, type: tool_used, tool: mcp__plugin_terminal49_terminal49__get_container_transport_events, min: 0, max: 0, arm: with-only }
+  - name: answer
+    type: llm
+    criteria: |
+      PASS if the answer says pickup is blocked by the active customs hold and
+      gives the 2026-09-14 LFD without promising a pickup time.
+      FAIL if it says pickup is ready, omits the blocker, or dumps a timeline.

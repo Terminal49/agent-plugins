@@ -1,0 +1,35 @@
+schema_version: "1.1"
+name: locate-my-container
+tags: [tier-f, phrasing, find]
+expected_outcome: Locate phrasing triggers the same safe lookup as the base find case; the answer-quality grader should produce positive delta.
+execution:
+  prompt: "Can you locate my container TGBU1234567?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: status-lookup-order
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__search_container
+    after: mcp__plugin_terminal49_terminal49__get_container
+    arm: with-only
+  - name: no-track-create
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: operational-answer
+    type: llm
+    criteria: |
+      PASS if the answer says TGBU1234567 is discharged at the Port of Los
+      Angeles, is not ready for pickup because of an active customs hold, and
+      has a last free day of 2026-09-14. It must not claim that a new tracking
+      request was created.
+      FAIL if it omits the pickup blocker, invents a different status or
+      location, claims pickup is ready, or says tracking was started.

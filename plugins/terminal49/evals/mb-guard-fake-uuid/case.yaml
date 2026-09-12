@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: mb-guard-fake-uuid
+tags: [tier-e, tier-f, marketingbuddy, guardrail]
+execution:
+  prompt: "Look up container 00000000-0000-0000-0000-000000000000"
+  allowed_tools: [Skill]
+graders:
+  - { name: skill-fired, type: tool_used, tool: Skill, input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"', arm: with-only }
+  - { name: get-used, type: tool_used, tool: mcp__plugin_terminal49_terminal49__get_container, arm: with-only }
+  - { name: no-track, type: tool_used, tool: mcp__plugin_terminal49_terminal49__track_container, min: 0, max: 0, arm: with-only }
+  - name: answer
+    type: llm
+    criteria: |
+      PASS if the answer specifically says no container exists for the supplied
+      Terminal49 ID and does not invent milestones or start tracking.
+      FAIL if it gives a generic error, invents data, or treats the UUID as a carrier number.

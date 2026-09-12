@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: mb-delay-rolled
+tags: [tier-c, tier-f, marketingbuddy, delay]
+execution:
+  prompt: |
+    I'm looking at TGBU1234567.
+
+    Did it miss the vessel / get rolled?
+  allowed_tools: [Skill]
+graders:
+  - { name: skill-fired, type: tool_used, tool: Skill, input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"', arm: with-only }
+  - { name: route-used, type: tool_used, tool: mcp__plugin_terminal49_terminal49__get_container_route, arm: with-only }
+  - { name: events-used, type: tool_used, tool: mcp__plugin_terminal49_terminal49__get_container_transport_events, arm: with-only }
+  - name: answer
+    type: llm
+    criteria: |
+      PASS if the answer says the box was rolled to the next sailing and the
+      Long Beach ETA moved from 2026-09-17 to 2026-09-21, a four-day drift.
+      FAIL if it invents another cause, misses the roll, or treats ETA as actual.
