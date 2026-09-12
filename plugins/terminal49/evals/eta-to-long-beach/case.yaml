@@ -1,0 +1,30 @@
+schema_version: "1.1"
+name: eta-to-long-beach
+tags: [tier-c, investigate, eta]
+expected_outcome: Use route and event evidence for the ETA; the answer-quality grader should produce positive delta.
+execution:
+  prompt: "What's the ETA to LB for CMAU1357924?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: route-used
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__get_container_route
+    arm: with-only
+  - name: events-used
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__get_container_transport_events
+    arm: with-only
+  - name: eta-answer
+    type: llm
+    criteria: |
+      PASS if the answer says Long Beach is the discharge destination and gives
+      the current estimated arrival as 2026-09-20, clearly labeling it estimated.
+      FAIL if it presents the ETA as actual, names a different destination or
+      date, or invents a delay cause.

@@ -4,6 +4,8 @@ These cases follow Anthropic's
 [plugin eval format](https://code.claude.com/docs/en/plugin-evals). They test
 natural logistics questions against fixed Terminal49 MCP responses. The
 identifiers and shipment data are illustrative fixtures, not customer data.
+[`QUESTION_BANK.md`](QUESTION_BANK.md) defines the layered Tier A–F customer
+questions and maps each one to an executable case.
 
 ## Prerequisites
 
@@ -41,8 +43,32 @@ claude plugin eval . \
   --no-publish
 ```
 
+Run one bank tier with its tag:
+
+```sh
+claude plugin eval . \
+  --tag tier-b \
+  --runs 1 \
+  --ablation none \
+  --mocks record \
+  --no-publish
+```
+
 Then run the full default three-run, with/without-plugin comparison before
 shipping.
+
+To save a machine-checkable full result and require positive delta for every
+case:
+
+```sh
+claude plugin eval . \
+  --mocks record \
+  --trust-plugin \
+  --no-publish \
+  --json /tmp/terminal49-plugin-evals.json
+
+node evals/check-delta.mjs /tmp/terminal49-plugin-evals.json
+```
 
 ## Reading the result
 
@@ -59,6 +85,15 @@ and `Δ` is `WITH - W/OUT`. Green for this plugin means:
 Skill and MCP sequencing graders are marked `with-only`, so they are indicators
 and do not artificially inflate `Δ`. Inspect failures in the generated HTML
 report under `evals/results/`.
+
+Follow question-bank-first iteration:
+
+1. change prompts, fixtures, or graders when the bank does not represent the
+   customer behavior accurately;
+2. run the full mocked comparison;
+3. tighten the skill description or workflow text only when the report shows a
+   repeatable trigger, tool-selection, or answer gap in the with-plugin arm;
+4. keep skill changes thin and rerun the same cases to verify improved `Δ`.
 
 Submit this plugin to the Anthropic community marketplace only after
 `claude plugin validate .` passes and the full mocked eval has a green,

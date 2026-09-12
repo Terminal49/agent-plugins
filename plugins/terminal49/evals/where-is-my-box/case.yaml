@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: where-is-my-box
+tags: [tier-f, phrasing, find]
+expected_outcome: Slang phrasing triggers the same safe status lookup; the answer-quality grader should produce positive delta.
+execution:
+  prompt: "Where's my box? TGBU1234567"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: status-lookup-order
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__search_container
+    after: mcp__plugin_terminal49_terminal49__get_container
+    arm: with-only
+  - name: no-track-create
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: location-answer
+    type: llm
+    criteria: |
+      PASS if the answer says TGBU1234567 is discharged at the Port of Los
+      Angeles and flags the active customs hold without creating tracking.
+      FAIL if it invents another location, says pickup is clear, or starts tracking.

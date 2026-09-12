@@ -1,0 +1,31 @@
+schema_version: "1.1"
+name: any-rail
+tags: [tier-c, investigate, rail, route]
+expected_outcome: Use route and relevant events to identify the inland rail leg; the answer-quality grader should produce positive delta.
+execution:
+  prompt: "Does TEMU1122334 have any rail after the port? Where would I pick it up?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: route-used
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__get_container_route
+    arm: with-only
+  - name: events-used
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__get_container_transport_events
+    arm: with-only
+  - name: rail-answer
+    type: llm
+    criteria: |
+      PASS if the answer identifies a planned rail leg from Los Angeles to
+      Dallas, gives the estimated Dallas rail arrival as 2026-09-24, and says
+      pickup is at the Dallas inland ramp rather than the port.
+      FAIL if it says there is no rail leg, directs pickup to Los Angeles, or
+      presents the estimated rail arrival as actual.

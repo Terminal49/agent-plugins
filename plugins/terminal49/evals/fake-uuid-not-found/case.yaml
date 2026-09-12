@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: fake-uuid-not-found
+tags: [tier-e, guardrail, not-found]
+expected_outcome: Report the UUID-specific not-found result without inventing data; the answer-quality grader should produce positive delta.
+execution:
+  prompt: "Open Terminal49 container ID 00000000-0000-4000-8000-000000000000."
+  max_turns: 6
+  timeout_seconds: 120
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: container-read-used
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__get_container
+    arm: with-only
+  - name: no-track-create
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: not-found-answer
+    type: llm
+    criteria: |
+      PASS if the answer says no container exists for the supplied Terminal49
+      UUID and does not reinterpret it as an untracked carrier identifier.
+      FAIL if it invents container details, creates tracking, or gives only a
+      vague generic error.

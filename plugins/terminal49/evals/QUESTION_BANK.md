@@ -31,6 +31,7 @@ when the customer asks for history.
 | Customer wording | Expected behavior | Executable case |
 | --- | --- | --- |
 | "Why is OOLU2468135 late?" | transport events, last confirmed move, ETA drift, evidence-bounded narrative | `investigate-container-delay` |
+| "Investigate shipment MAEUDEMO12494. Are any containers delayed?" | shipment details, affected container, and estimated arrival | `investigate-shipment` |
 | "What's the ETA to LB for CMAU1357924?" | current ETA to Long Beach and whether it is estimated | `eta-to-long-beach` |
 | "Does TEMU1122334 have any rail after the port?" | route plus relevant rail events and inland pickup location | `any-rail` |
 
