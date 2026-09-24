@@ -1,7 +1,7 @@
 # Terminal49 agent plugins
 
-Install Terminal49 container-tracking tools and workflow guidance in Cursor,
-Claude Code, Codex, and GitHub Copilot CLI.
+Install Terminal49 container-tracking tools and workflow guidance in Grok Bot,
+Cursor, Claude Code, Codex, and GitHub Copilot CLI.
 
 This marketplace currently publishes one plugin:
 
@@ -21,6 +21,18 @@ The plugin does not contain API keys or customer data. Authentication happens
 through the MCP client's OAuth flow.
 
 ## Install
+
+### Grok Bot (Cursor Agents / Grok Bot)
+
+In Grok Bot: **Plugins** → search **Terminal49** → **Add** →
+**Authenticate**. Or tell any bot: “Install the Terminal49 plugin.”
+
+If the plugin is unavailable, ask the bot to add a custom MCP at
+`https://mcp.terminal49.com`, then authorize.
+
+1. **Plugins** → search **Terminal49**
+2. **Add** → **Authenticate** with your Terminal49 account
+3. Otherwise, add the custom connector `https://mcp.terminal49.com`
 
 ### Cursor
 
