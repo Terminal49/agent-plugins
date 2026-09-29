@@ -62,7 +62,11 @@ const pluginVersion = claudePlugin?.version ?? cursorPlugin?.version ?? codexPlu
 const names = new Set(plugins.map((plugin) => plugin.name));
 const versions = new Set(plugins.map((plugin) => plugin.version));
 const descriptions = new Set(plugins.map((plugin) => plugin.description));
-const displayNames = new Set(plugins.map((plugin) => plugin.displayName));
+const displayNames = new Set([
+  cursorPlugin?.displayName,
+  claudePlugin?.displayName,
+  codexPlugin?.interface?.displayName,
+]);
 const homepages = new Set(plugins.map((plugin) => plugin.homepage));
 const repositories = new Set(plugins.map((plugin) => plugin.repository));
 const authors = new Set(plugins.map((plugin) => plugin.author?.name));
@@ -73,14 +77,14 @@ if (names.size !== 1 || !names.has("terminal49")) errors.push("plugin manifest n
 if (versions.size !== 1) errors.push("plugin manifest versions must match");
 if (descriptions.size !== 1) errors.push("plugin manifest descriptions must match");
 if (displayNames.size !== 1 || !displayNames.has("Terminal49")) {
-  errors.push("plugin manifest displayNames must all be Terminal49");
+  errors.push("plugin display names must all be Terminal49");
 }
 if (homepages.size !== 1) errors.push("plugin manifest homepages must match");
 if (repositories.size !== 1) errors.push("plugin manifest repositories must match");
 if (authors.size !== 1) errors.push("plugin manifest author names must match");
 if (keywords.size !== 1) errors.push("plugin manifest keywords must match");
-if (codexPlugin && codexPlugin.interface?.displayName !== codexPlugin.displayName) {
-  errors.push("Codex interface displayName must match the manifest displayName");
+if (codexPlugin && "displayName" in codexPlugin) {
+  errors.push("Codex displayName must be inside interface, not at the manifest root");
 }
 
 for (const [label, marketplace] of [
