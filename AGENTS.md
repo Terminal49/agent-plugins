@@ -12,11 +12,19 @@ This is a public, cross-platform plugin marketplace for Terminal49.
   resource identifier.
 - Do not ask users to paste credentials into chat. Let the client initiate its
   OAuth connection flow.
+- The `trade-intelligence` skill reads a Terminal49 API key that the user saves
+  in their own terminal (`T49_API_KEY` or `~/.t49_api_key`). Never put a real
+  key in examples, logs, or chat.
 
 ## Shared source of truth
 
-- `plugins/terminal49/skills/container-tracking/SKILL.md` is the shared behavioral
-  guidance for all clients.
+- The skills under `plugins/terminal49/skills/` are the shared behavioral
+  guidance for all clients:
+  - `container-tracking/SKILL.md` covers container and shipment questions with
+    the Terminal49 MCP tools.
+  - `trade-intelligence/SKILL.md` covers US import market research through the
+    Terminal49 REST API, using its bundled `scripts/ti.py` client and
+    `references/api.md`.
 - `plugins/terminal49/.mcp.json` and `plugins/terminal49/mcp.json` are the MCP
   adapters for Claude/Codex and Cursor respectively. Keep their server entries
   identical.

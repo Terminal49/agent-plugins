@@ -1,7 +1,7 @@
 {
   "name": "terminal49",
-  "version": "0.1.0",
-  "description": "Track and investigate container shipments with Terminal49 MCP tools and workflow guidance.",
+  "version": "0.2.0",
+  "description": "Track and investigate container shipments with Terminal49 MCP tools, and research US ocean import markets with Terminal49 trade intelligence.",
   "author": {
     "name": "Terminal49"
   },
@@ -13,14 +13,15 @@
     "logistics",
     "mcp",
     "ocean-freight",
-    "supply-chain"
+    "supply-chain",
+    "trade-intelligence"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Terminal49",
-    "shortDescription": "Track and investigate container shipments",
-    "longDescription": "Connect to Terminal49 and use guided workflows for container status, pickup readiness, holds, ETAs, routes, delays, and demurrage risk.",
+    "shortDescription": "Track container shipments and research US imports",
+    "longDescription": "Connect to Terminal49 and use guided workflows for container status, pickup readiness, holds, ETAs, routes, delays, and demurrage risk, plus trade-intelligence research on US ocean imports: competitors, sourcing, and market trends.",
     "developerName": "Terminal49",
     "category": "Productivity",
     "capabilities": [
@@ -29,7 +30,8 @@
     ],
     "websiteURL": "https://terminal49.com",
     "defaultPrompt": [
-      "Track a container or investigate the latest status of my shipments"
+      "Track a container or investigate the latest status of my shipments",
+      "Show what a competitor imports, from where, and how its volume is trending"
     ]
   }
 }
