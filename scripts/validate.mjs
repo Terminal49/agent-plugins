@@ -1,4 +1,4 @@
-import { readFile, access } from "node:fs/promises";
+import { readFile, readdir, access } from "node:fs/promises";
 import { resolve } from "node:path";
 import process from "node:process";
 
@@ -15,7 +15,9 @@ const paths = {
   codexPlugin: "plugins/terminal49/.codex-plugin/plugin.json",
   mcp: "plugins/terminal49/.mcp.json",
   cursorMcp: "plugins/terminal49/mcp.json",
+  skillsDir: "plugins/terminal49/skills",
   skill: "plugins/terminal49/skills/container-tracking/SKILL.md",
+  tradeSkill: "plugins/terminal49/skills/trade-intelligence/SKILL.md",
 };
 
 async function readJson(relativePath) {
@@ -54,8 +56,18 @@ const [cursorMarketplace, claudeMarketplace, codexMarketplace, cursorPlugin, cla
   ]);
 
 await Promise.all(
-  ["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", "plugins/terminal49/README.md", paths.skill].map(requireFile),
+  ["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", "plugins/terminal49/README.md", paths.skill, paths.tradeSkill].map(
+    requireFile,
+  ),
 );
+
+const skillNames = await readdir(resolve(root, paths.skillsDir), { withFileTypes: true })
+  .then((entries) => entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name))
+  .catch((error) => {
+    errors.push(`${paths.skillsDir}: ${error.message}`);
+    return [];
+  });
+const skillPaths = skillNames.map((name) => `${paths.skillsDir}/${name}/SKILL.md`);
 
 const plugins = [cursorPlugin, claudePlugin, codexPlugin].filter(Boolean);
 const pluginVersion = claudePlugin?.version ?? cursorPlugin?.version ?? codexPlugin?.version;
@@ -142,7 +154,7 @@ if (JSON.stringify(cursorMcp) !== JSON.stringify(mcp)) {
 
 if (cursorPlugin?.logo) await requireFile(`plugins/terminal49/${cursorPlugin.logo}`);
 
-for (const docPath of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "plugins/terminal49/README.md", paths.skill]) {
+for (const docPath of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "plugins/terminal49/README.md", ...skillPaths]) {
   try {
     const text = await readFile(resolve(root, docPath), "utf8");
     const suffixed = text.match(/mcp\.terminal49\.com\/[^\s)`"']*/);
@@ -154,15 +166,38 @@ for (const docPath of ["README.md", "CONTRIBUTING.md", "AGENTS.md", "plugins/ter
   }
 }
 
+for (const [index, name] of skillNames.entries()) {
+  const skillPath = skillPaths[index];
+  try {
+    const skill = await readFile(resolve(root, skillPath), "utf8");
+    if (!skill.startsWith("---\n")) errors.push(`${skillPath} must start with YAML frontmatter`);
+    if (skill.match(/^name: (.+)$/m)?.[1] !== name) errors.push(`${skillPath} name must be ${name}`);
+    if (!/^description: .+$/m.test(skill)) errors.push(`${skillPath} must have a description`);
+    const bundled = new Set(Array.from(skill.matchAll(/`((?:references|scripts)\/[^`\s]+)/g), (match) => match[1]));
+    await Promise.all([...bundled].map((file) => requireFile(`${paths.skillsDir}/${name}/${file}`)));
+  } catch (error) {
+    errors.push(`${skillPath}: ${error.message}`);
+  }
+}
+
 try {
   const skill = await readFile(resolve(root, paths.skill), "utf8");
-  if (!skill.startsWith("---\n")) errors.push("skill must start with YAML frontmatter");
-  if (!/^name: container-tracking$/m.test(skill)) errors.push("skill name must be container-tracking");
-  if (!/^description: .+$/m.test(skill)) errors.push("skill must have a description");
   if (!skill.includes("search_container")) errors.push("skill must explain search_container");
   if (!skill.includes("track_container")) errors.push("skill must explain track_container");
 } catch (error) {
   errors.push(`${paths.skill}: ${error.message}`);
+}
+
+try {
+  const skill = await readFile(resolve(root, paths.tradeSkill), "utf8");
+  if (!/never ask the user to paste an API key/i.test(skill)) {
+    errors.push("trade-intelligence skill must forbid pasting API keys into chat");
+  }
+  if (!skill.includes("support@terminal49.com")) {
+    errors.push("trade-intelligence skill must send accounts without access to support@terminal49.com");
+  }
+} catch (error) {
+  errors.push(`${paths.tradeSkill}: ${error.message}`);
 }
 
 if (errors.length > 0) {

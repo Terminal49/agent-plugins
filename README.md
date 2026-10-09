@@ -1,12 +1,14 @@
 # Terminal49 agent plugins
 
-Install Terminal49 container-tracking tools and workflow guidance in Grok Bot,
-Cursor, Claude Code, Codex, and GitHub Copilot CLI.
+Install Terminal49 container-tracking tools, trade-intelligence research, and
+workflow guidance in Grok Bot, Cursor, Claude Code, Codex, and GitHub Copilot
+CLI.
 
 This marketplace currently publishes one plugin:
 
 - **Terminal49** — connects to the hosted Terminal49 MCP server and teaches
-  agents how to search, track, and investigate container shipments.
+  agents how to search, track, and investigate container shipments, and how to
+  research US ocean imports with Terminal49 trade intelligence.
 
 ## What the plugin provides
 
@@ -16,9 +18,14 @@ This marketplace currently publishes one plugin:
   demurrage-risk questions
 - Guardrails around tracking-request creation, credentials, dates, and missing
   data
+- A `trade-intelligence` skill for competitor research, sourcing, and market
+  trends from US ocean import bill-of-lading records since 2022 (for accounts
+  with trade intelligence enabled)
 
-The plugin does not contain API keys or customer data. Authentication happens
-through the MCP client's OAuth flow.
+The plugin does not contain API keys or customer data. Container tracking
+authenticates through the MCP client's OAuth flow. Trade intelligence currently
+uses a Terminal49 API key that you save in your own terminal; see the
+[plugin README](plugins/terminal49/README.md#trade-intelligence-api-key).
 
 ## Install
 
@@ -77,9 +84,12 @@ After connecting your Terminal49 account, ask your agent:
 - “Is this container ready for pickup, and are there any holds?”
 - “Explain what changed in this container's journey.”
 - “Show containers updated since yesterday and group them by status.”
+- “Who are the largest US importers of office chairs, and where do they source
+  them?”
 
 The example identifier is illustrative. Results depend on the shipments visible
-to the authenticated Terminal49 account.
+to the authenticated Terminal49 account. Trade-intelligence questions need an
+account with trade intelligence enabled.
 
 ## Repository layout
 
@@ -96,10 +106,15 @@ to the authenticated Terminal49 account.
     ├── mcp.json                      # Cursor MCP adapter
     ├── README.md
     ├── assets/logo.svg               # Referenced by the Cursor manifest
-    └── skills/container-tracking/SKILL.md
+    └── skills/
+        ├── container-tracking/SKILL.md
+        └── trade-intelligence/
+            ├── SKILL.md
+            ├── references/api.md     # Endpoint parameters and fields
+            └── scripts/ti.py         # Python 3 API client, no dependencies
 ```
 
-The skill is shared. Each platform-specific manifest and MCP file is a thin
+The skills are shared. Each platform-specific manifest and MCP file is a thin
 adapter around that shared content, with validation keeping the endpoint in
 sync.
 

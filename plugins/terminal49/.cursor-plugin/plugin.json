@@ -1,8 +1,8 @@
 {
   "name": "terminal49",
   "displayName": "Terminal49",
-  "version": "0.1.0",
-  "description": "Track and investigate container shipments with Terminal49 MCP tools and workflow guidance.",
+  "version": "0.2.0",
+  "description": "Track and investigate container shipments with Terminal49 MCP tools, and research US ocean import markets with Terminal49 trade intelligence.",
   "author": {
     "name": "Terminal49"
   },
@@ -15,7 +15,8 @@
     "logistics",
     "mcp",
     "ocean-freight",
-    "supply-chain"
+    "supply-chain",
+    "trade-intelligence"
   ],
   "category": "Productivity",
   "skills": "./skills/",
