@@ -3,8 +3,8 @@
     "test_cases": {
       "positive": [
         {
-          "description": "Count the containers that are ready for pickup with the dashboard definition",
-          "prompt": "How many of my containers are ready for pickup?",
+          "description": "List the containers that are ready for pickup with the dashboard definition",
+          "prompt": "Which of my containers are ready for pickup?",
           "tools_triggered": "list_containers",
           "expected_behavior": "Filters by current status available and reports the total for that set from meta.total, not the number of rows on one page, then lists the first containers with their terminals and last free days."
         },
