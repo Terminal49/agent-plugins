@@ -30,7 +30,7 @@ async function writeStaged(path, contents) {
 const icons = new Set([manifest.interface.logo, manifest.interface.composerIcon]);
 await writeStaged(
   ".codex-plugin/plugin.json",
-  `${JSON.stringify({ ...manifest, name: listing.name, version: listing.version, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
+  `${JSON.stringify({ ...manifest, name: listing.name, version: listing.version, interface: { ...manifest.interface, category: listing.category }, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
 );
 // The Codex-format .mcp.json in the submission guide names only the url.
 const servers = Object.fromEntries(Object.entries(mcp.mcpServers).map(([name, { url }]) => [name, { url }]));
@@ -69,6 +69,7 @@ for (const file of zipped) {
 if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(listing.name ?? "") || listing.name.length > 64) {
   errors.push("openai/listing.json name must be the OpenAI package name");
 }
+if (!listing.category) errors.push("openai/listing.json category must match the dashboard category title");
 if (!/^\d+\.\d+\.\d+$/.test(listing.version ?? "")) errors.push("openai/listing.json version must be semver");
 if (Object.keys(servers).length !== 1) errors.push("the ZIP must declare exactly one MCP server");
 if (manifest.apps || manifest.hooks) errors.push("the OpenAI directory rejects apps and lifecycle hooks");
