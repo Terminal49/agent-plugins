@@ -47,6 +47,11 @@
           "prompt": "Change the drayage carrier on my containers."
         }
       ]
-    }
+    },
+    "commerce": false,
+    "commerce_description": "Terminal49 for ChatGPT does not sell products or process payments. Trade intelligence is enabled per account under the customer's existing Terminal49 agreement."
+  },
+  "publication": {
+    "release_notes": "Initial release: track containers and shipments, review documents, update parties and custom fields on request, and research US ocean import markets with Terminal49."
   }
 }
