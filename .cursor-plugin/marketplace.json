@@ -4,15 +4,15 @@
     "name": "Terminal49"
   },
   "metadata": {
-    "description": "Terminal49 container-tracking and trade-intelligence tools and agent skills",
-    "version": "0.2.0"
+    "description": "Terminal49 MCP server and agent skills for container tracking and trade intelligence",
+    "version": "0.3.0"
   },
   "plugins": [
     {
       "name": "terminal49",
       "source": "./plugins/terminal49",
-      "description": "Use Terminal49 MCP tools to track and investigate container shipments, and Terminal49 trade intelligence to research US ocean imports",
-      "version": "0.2.0"
+      "description": "Container tracking, shipment record updates, and US import trade intelligence from the Terminal49 MCP server, with agent skills",
+      "version": "0.3.0"
     }
   ]
 }
