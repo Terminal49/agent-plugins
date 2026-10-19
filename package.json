@@ -8,6 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "validate": "node scripts/validate.mjs"
+    "validate": "node scripts/validate.mjs",
+    "build:openai-zip": "node scripts/build-openai-zip.mjs"
   }
 }

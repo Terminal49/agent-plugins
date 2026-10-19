@@ -1,0 +1,27 @@
+schema_version: "1.1"
+name: fleet-ready-for-pickup
+tags: [tier-g, fleet, dashboard]
+expected_outcome: Report the dashboard total for ready for pickup, not the row count of one page.
+execution:
+  prompt: "How many of my containers are ready for pickup?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: no-track-container
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: dashboard-total
+    type: llm
+    criteria: |
+      PASS if the answer says 42 containers are ready for pickup (available).
+      FAIL if it reports 3 as the total, or says the count is unknown without
+      giving 42, or invents containers not in the tool results.

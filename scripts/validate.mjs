@@ -1,5 +1,5 @@
-import { readFile, readdir, access } from "node:fs/promises";
-import { resolve } from "node:path";
+import { readFile, readdir, access, lstat } from "node:fs/promises";
+import { extname, relative, resolve } from "node:path";
 import process from "node:process";
 
 const root = process.cwd();
@@ -18,6 +18,8 @@ const paths = {
   skillsDir: "plugins/terminal49/skills",
   skill: "plugins/terminal49/skills/container-tracking/SKILL.md",
   tradeSkill: "plugins/terminal49/skills/trade-intelligence/SKILL.md",
+  recordSkill: "plugins/terminal49/skills/record-updates/SKILL.md",
+  pluginDir: "plugins/terminal49",
 };
 
 async function readJson(relativePath) {
@@ -56,7 +58,7 @@ const [cursorMarketplace, claudeMarketplace, codexMarketplace, cursorPlugin, cla
   ]);
 
 await Promise.all(
-  ["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", "plugins/terminal49/README.md", paths.skill, paths.tradeSkill].map(
+  ["README.md", "LICENSE", "AGENTS.md", "CONTRIBUTING.md", "plugins/terminal49/README.md", paths.skill, paths.tradeSkill, paths.recordSkill].map(
     requireFile,
   ),
 );
@@ -198,6 +200,102 @@ try {
   }
 } catch (error) {
   errors.push(`${paths.tradeSkill}: ${error.message}`);
+}
+
+try {
+  const skill = await readFile(resolve(root, paths.recordSkill), "utf8");
+  for (const tool of ["set_party_role", "set_custom_field", "party_roles"]) {
+    if (!skill.includes(tool)) errors.push(`record-updates skill must explain ${tool}`);
+  }
+  if (!/only when the user asks/i.test(skill)) {
+    errors.push("record-updates skill must restrict writes to explicit user requests");
+  }
+} catch (error) {
+  errors.push(`${paths.recordSkill}: ${error.message}`);
+}
+
+// Agent Skills spec: https://agentskills.io/specification
+for (const skillPath of skillPaths) {
+  try {
+    const skill = await readFile(resolve(root, skillPath), "utf8");
+    const frontmatter = skill.match(/^---\n([\s\S]*?)\n---\n/)?.[1] ?? "";
+    const name = frontmatter.match(/^name: (.+)$/m)?.[1] ?? "";
+    const description = frontmatter.match(/^description: (.+)$/m)?.[1] ?? "";
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name) || name.length > 64) {
+      errors.push(`${skillPath} name must be 1-64 lowercase letters, digits, and single hyphens`);
+    }
+    if (description.length > 1024) errors.push(`${skillPath} description must be at most 1024 characters`);
+    const keys = Array.from(frontmatter.matchAll(/^([A-Za-z_-]+):/gm), (match) => match[1]);
+    const portable = new Set(["name", "description", "license", "compatibility", "metadata", "allowed-tools"]);
+    for (const key of keys) {
+      if (!portable.has(key)) errors.push(`${skillPath} frontmatter key ${key} is not portable to claude.ai and ChatGPT`);
+    }
+  } catch {
+    // reported above
+  }
+}
+
+// Anthropic directory listing fields: https://code.claude.com/docs/en/plugins-reference#directory-listing-fields
+const listingFields = {
+  supportUrl: "supportURL",
+  privacyPolicyUrl: "privacyPolicyURL",
+  termsOfServiceUrl: "termsOfServiceURL",
+};
+for (const field of ["documentationUrl", ...Object.keys(listingFields)]) {
+  if (!/^https:\/\//.test(claudePlugin?.[field] ?? "")) errors.push(`Claude plugin ${field} must be an https URL`);
+}
+for (const [claudeField, codexField] of Object.entries(listingFields)) {
+  if (codexPlugin?.interface?.[codexField] !== claudePlugin?.[claudeField]) {
+    errors.push(`Codex interface.${codexField} must match Claude ${claudeField}`);
+  }
+}
+for (const icon of [claudePlugin?.icon, codexPlugin?.interface?.logo, codexPlugin?.interface?.composerIcon]) {
+  if (!icon) errors.push("Claude icon and Codex logo and composerIcon are required");
+  else await requireFile(`${paths.pluginDir}/${icon}`);
+}
+
+// OpenAI directory limits: https://developers.openai.com/apps-sdk/deploy/submission
+const codexInterface = codexPlugin?.interface ?? {};
+if ((codexInterface.displayName ?? "").length > 30) errors.push("Codex interface.displayName must be at most 30 characters");
+if ((codexInterface.shortDescription ?? "").length > 30) {
+  errors.push("Codex interface.shortDescription must be at most 30 characters");
+}
+const prompts = codexInterface.defaultPrompt ?? [];
+if (prompts.length > 3 || prompts.some((prompt) => prompt.length > 128)) {
+  errors.push("Codex interface.defaultPrompt must have at most 3 prompts of at most 128 characters");
+}
+
+// Directory checks on the plugin folder: https://claude.com/docs/plugins/pre-submission-checklist
+const imageExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"]);
+const credentialRead = /T49_API_KEY|\.t49_api_key|process\.env|os\.environ|getenv\(/;
+async function walk(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const path = resolve(directory, entry.name);
+    if (entry.name === "results" && directory.endsWith("evals")) continue;
+    if (entry.isDirectory()) files.push(...(await walk(path)));
+    else files.push(path);
+  }
+  return files;
+}
+const pluginFiles = await walk(resolve(root, paths.pluginDir));
+if (pluginFiles.length > 512) errors.push(`plugin folder has ${pluginFiles.length} files; the directory holds more than 512 for review`);
+for (const file of pluginFiles) {
+  const path = relative(root, file);
+  const stats = await lstat(file);
+  if (stats.isSymbolicLink()) errors.push(`${path} is a symbolic link; commit a regular file`);
+  if (stats.size > 256 * 1024) errors.push(`${path} is larger than 256 KiB`);
+  if (/(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/.test(path)) errors.push(`${path} is a system file`);
+  if (imageExtensions.has(extname(file))) continue;
+  const bytes = await readFile(file);
+  if (bytes.includes(0)) {
+    errors.push(`${path} is a binary file; only images may be binary`);
+    continue;
+  }
+  if (credentialRead.test(bytes.toString("utf8"))) {
+    errors.push(`${path} reads a credential from the user's machine; use the MCP server's OAuth connection instead`);
+  }
 }
 
 if (errors.length > 0) {

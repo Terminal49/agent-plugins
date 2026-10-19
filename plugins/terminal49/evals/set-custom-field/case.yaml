@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: set-custom-field
+tags: [tier-d, writes]
+expected_outcome: Read the custom field slug, then set it once with the requested value.
+execution:
+  prompt: "Set the PO number on TGBU1234567 to PO-55821."
+  max_turns: 10
+  timeout_seconds: 240
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?record-updates"'
+    arm: with-only
+  - name: one-set-custom-field
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__set_custom_field
+    min: 1
+    max: 1
+    arm: with-only
+  - name: write-answer
+    type: llm
+    criteria: |
+      PASS if the answer says the PO Number on TGBU1234567 is now PO-55821.
+      FAIL if it claims a different value or field, or says the change failed.

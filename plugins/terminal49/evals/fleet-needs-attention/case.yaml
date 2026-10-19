@@ -1,0 +1,35 @@
+schema_version: "1.1"
+name: fleet-needs-attention
+tags: [tier-g, fleet, dashboard]
+expected_outcome: Use the requires_attention dashboard view and rank by LFD pressure, then holds.
+execution:
+  prompt: "What needs attention in my containers today?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: attention-filter
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__list_containers
+    min: 1
+    arm: with-only
+    input_match: '"requires_attention"\s*:\s*true'
+  - name: no-track-container
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: attention-answer
+    type: llm
+    criteria: |
+      PASS if the answer reports 2 containers needing attention, ranks
+      FXTU1000011 (the earlier last free day) ahead of FXTU1000022 or flags its
+      last free day as the most urgent, and names the customs hold on
+      FXTU1000022. Caveats about how current the data is are fine.
+      FAIL if it invents fees or containers, or omits either container.

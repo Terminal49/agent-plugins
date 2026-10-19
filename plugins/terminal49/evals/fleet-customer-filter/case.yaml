@@ -1,0 +1,38 @@
+schema_version: "1.1"
+name: fleet-customer-filter
+tags: [tier-g, fleet, parties]
+expected_outcome: Resolve the customer with list_parties and filter by advanced_filters.customer_id with the discharged-not-picked-up statuses.
+execution:
+  prompt: "Which of Acme Foods' containers are discharged but not picked up yet?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: resolve-before-filter
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__list_parties
+    after: mcp__plugin_terminal49_terminal49__list_containers
+    arm: with-only
+  - name: customer-id-filter
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__list_containers
+    min: 1
+    arm: with-only
+    input_match: '"customer_id"\s*:\s*"cccccccc-0000-4000-8000-0000000000c1"'
+  - name: discharged-statuses
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__list_containers
+    min: 1
+    arm: with-only
+    input_match: grounded
+  - name: customer-answer
+    type: llm
+    criteria: |
+      PASS if the answer reports 2 containers for Acme Foods that are
+      discharged and not picked up, and lists both container numbers.
+      FAIL if it invents containers or reports a different total.

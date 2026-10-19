@@ -1,9 +1,11 @@
 {
   "name": "terminal49",
-  "version": "0.2.0",
-  "description": "Track and investigate container shipments with Terminal49 MCP tools, and research US ocean import markets with Terminal49 trade intelligence.",
+  "version": "0.3.0",
+  "description": "Track and investigate container shipments, update shipment records, and research US ocean import markets with the Terminal49 MCP server.",
   "author": {
-    "name": "Terminal49"
+    "name": "Terminal49",
+    "email": "support@terminal49.com",
+    "url": "https://www.terminal49.com"
   },
   "homepage": "https://terminal49.com",
   "repository": "https://github.com/Terminal49/agent-plugins",
@@ -20,18 +22,24 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Terminal49",
-    "shortDescription": "Track container shipments and research US imports",
-    "longDescription": "Connect to Terminal49 and use guided workflows for container status, pickup readiness, holds, ETAs, routes, delays, and demurrage risk, plus trade-intelligence research on US ocean imports: competitors, sourcing, and market trends.",
+    "shortDescription": "Track containers and shipments",
+    "longDescription": "Connect your Terminal49 account to answer container and shipment questions in plain language: status, pickup readiness, holds, last free day, ETAs, routes, rail moves, delays, and demurrage risk. Count and list containers with the same definitions as the Terminal49 dashboard, find shipping documents, and update the drayage carrier, other parties, or custom fields when you ask. Accounts with trade intelligence can also research US ocean imports: what a company imports, who imports a product, and how volumes by port, carrier, and origin are changing. The plugin reads only the shipments and documents your Terminal49 account can see. It changes records only when you ask for a specific change.",
     "developerName": "Terminal49",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
       "Write"
     ],
-    "websiteURL": "https://terminal49.com",
+    "websiteURL": "https://www.terminal49.com",
+    "supportURL": "https://www.terminal49.com/contact",
+    "privacyPolicyURL": "https://www.terminal49.com/privacy",
+    "termsOfServiceURL": "https://www.terminal49.com/terms",
     "defaultPrompt": [
-      "Track a container or investigate the latest status of my shipments",
-      "Show what a competitor imports, from where, and how its volume is trending"
-    ]
+      "Which of my containers are ready for pickup?",
+      "Which of my containers need attention today?",
+      "Who are the largest US importers of office chairs?"
+    ],
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/icon.svg"
   }
 }

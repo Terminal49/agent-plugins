@@ -1,0 +1,35 @@
+schema_version: "1.1"
+name: trade-top-importers
+tags: [tier-t, trade]
+expected_outcome: Resolve the product to HS4 9401 before ranking importers, and flag the likely forwarder.
+execution:
+  prompt: "Who are the biggest US importers of office chairs?"
+  max_turns: 10
+  timeout_seconds: 240
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?trade-intelligence"'
+    arm: with-only
+  - name: resolve-product-first
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__search_commodities
+    after: mcp__plugin_terminal49_terminal49__rank_importers
+    arm: with-only
+  - name: hs4-ranking
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__rank_importers
+    min: 1
+    arm: with-only
+    input_match: '"hs4"\s*:\s*"9401"'
+  - name: trade-answer
+    type: llm
+    criteria: |
+      PASS if the answer names FIXTURE FURNITURE CO as the largest importer,
+      says the ranking covers the broader seats category (HS 9401) rather than
+      office chairs alone, names the period, and notes
+      that GLOBAL FIXTURE LOGISTICS is probably a forwarder or logistics
+      provider rather than a cargo owner.
+      FAIL if it invents importers or figures, or omits the period.
