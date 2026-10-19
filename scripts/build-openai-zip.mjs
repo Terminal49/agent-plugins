@@ -13,9 +13,12 @@ const readJson = async (path) => JSON.parse(await readFile(path, "utf8"));
 const manifest = await readJson(join(pluginDir, ".codex-plugin/plugin.json"));
 const mcp = await readJson(join(pluginDir, ".mcp.json"));
 const { review, publication } = await readJson(resolve(root, "openai/review.json"));
+// The plugin already exists in the OpenAI dashboard. Uploads must keep its
+// package name and raise its version, which is separate from the repo version.
+const listing = await readJson(resolve(root, "openai/listing.json"));
 
 const stage = resolve(root, "dist/terminal49-openai");
-const zipPath = resolve(root, `dist/terminal49-openai-${manifest.version}.zip`);
+const zipPath = resolve(root, `dist/terminal49-openai-${listing.version}.zip`);
 await rm(stage, { recursive: true, force: true });
 await rm(zipPath, { force: true });
 
@@ -27,7 +30,7 @@ async function writeStaged(path, contents) {
 const icons = new Set([manifest.interface.logo, manifest.interface.composerIcon]);
 await writeStaged(
   ".codex-plugin/plugin.json",
-  `${JSON.stringify({ ...manifest, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
+  `${JSON.stringify({ ...manifest, name: listing.name, version: listing.version, interface: { ...manifest.interface, category: listing.category }, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
 );
 // The Codex-format .mcp.json in the submission guide names only the url.
 const servers = Object.fromEntries(Object.entries(mcp.mcpServers).map(([name, { url }]) => [name, { url }]));
@@ -63,6 +66,11 @@ const allowed = [
 for (const file of zipped) {
   if (!allowed.some((pattern) => pattern.test(file))) errors.push(`${file} is not an allowed ZIP entry`);
 }
+if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(listing.name ?? "") || listing.name.length > 64) {
+  errors.push("openai/listing.json name must be the OpenAI package name");
+}
+if (!listing.category) errors.push("openai/listing.json category must match the dashboard category title");
+if (!/^\d+\.\d+\.\d+$/.test(listing.version ?? "")) errors.push("openai/listing.json version must be semver");
 if (Object.keys(servers).length !== 1) errors.push("the ZIP must declare exactly one MCP server");
 if (manifest.apps || manifest.hooks) errors.push("the OpenAI directory rejects apps and lifecycle hooks");
 const cases = review?.test_cases ?? {};
