@@ -18,8 +18,8 @@ find it and report current status, location, and anything that needs attention.
 
 1. Confirm that Terminal49 MCP tools are available.
 2. If the client requests authentication, let it start the OAuth browser flow.
-3. Never ask the user to paste an API key, access token, password, or one-time
-   code into chat.
+3. Sign-in happens in the browser, so never ask the user for sign-in details or
+   one-time codes in chat.
 4. If the tools remain unavailable, say that the Terminal49 connection must be
    enabled and authenticated. Do not invent shipment data.
 5. If a lookup returns nothing or an authorization error, call `whoami` to
