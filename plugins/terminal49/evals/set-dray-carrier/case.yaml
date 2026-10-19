@@ -1,0 +1,38 @@
+schema_version: "1.1"
+name: set-dray-carrier
+tags: [tier-d, writes]
+expected_outcome: Resolve the container and the new party, then make one replace call.
+execution:
+  prompt: "Change the dray carrier on TGBU1234567 to Example Trucking."
+  max_turns: 10
+  timeout_seconds: 240
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?record-updates"'
+    arm: with-only
+  - name: resolve-record-first
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__search_container
+    after: mcp__plugin_terminal49_terminal49__set_party_role
+    arm: with-only
+  - name: resolve-party-first
+    type: tool_order
+    before: mcp__plugin_terminal49_terminal49__list_parties
+    after: mcp__plugin_terminal49_terminal49__set_party_role
+    arm: with-only
+  - name: one-set-party-role
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__set_party_role
+    min: 1
+    max: 1
+    arm: with-only
+  - name: write-answer
+    type: llm
+    criteria: |
+      PASS if the answer says the drayage carrier on TGBU1234567 is now Example
+      Trucking (replacing Harbor Dray Co), or that the change was made.
+      FAIL if it claims the change failed, changes other containers, or asks for
+      an API key.

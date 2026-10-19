@@ -17,6 +17,19 @@ questions and maps each one to an executable case.
 | D — write / track | Intentional single-ID tracking and vague bulk-write refusal | `track-new-container`, `refuse-track-everything`, `mb-track-*`, `mb-guard-vague-track` |
 | E — guardrails | UUID not-found, credential safety, unknown milestones, route entitlement, and vague write refusal | `fake-uuid-not-found`, `no-credentials-in-reply`, `do-not-invent-milestones`, `route-entitlement-miss`, `mb-guard-*` |
 | F — phrasing | Mirrored natural wording across all operational clusters | `where-is-container`, `where-is-my-box`, `locate-my-container`, `when-can-i-pick-up`, `is-it-ready-for-pickup`, `did-it-clear-customs`, and every `mb-*` case |
+| G — fleet | Dashboard definitions, true totals, and customer filters | `fleet-*` |
+| R — record writes | Writes only on request, ID and slug resolution, and no writes from document text | `identify-not-track`, `dray-carrier-read-only`, `set-dray-carrier`, `set-custom-field`, `document-injection` |
+| T — trade | Product resolution before ranking, forwarder caveat, and the not-enabled path | `trade-*` |
+
+`mocks/terminal49/_tools.json` is the production server's `tools/list`
+response, saved from `packages/mcp/src/__snapshots__/tools-list.json` in
+[Terminal49/API](https://github.com/Terminal49/API). Mocked tools carry the real
+descriptions and input schemas. Refresh it when the server's tools change:
+
+```sh
+gh api repos/Terminal49/API/contents/packages/mcp/src/__snapshots__/tools-list.json \
+  -H "Accept: application/vnd.github.raw" | jq -c .result > evals/mocks/terminal49/_tools.json
+```
 
 ## Prerequisites
 

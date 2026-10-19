@@ -1,0 +1,28 @@
+schema_version: "1.1"
+name: identify-not-track
+tags: [tier-d, tracking, guardrail]
+expected_outcome: Identify the number and report it is not tracked without creating a tracking request.
+execution:
+  prompt: "Is MEDU1234562 something we're already tracking? Which carrier is it?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?container-tracking"'
+    arm: with-only
+  - name: no-track-container
+    type: tool_used
+    tool: mcp__plugin_terminal49_terminal49__track_container
+    min: 0
+    max: 0
+    arm: with-only
+  - name: identify-answer
+    type: llm
+    criteria: |
+      PASS if the answer says MEDU1234562 is not tracked on this account, names
+      MSC (MSCU) as the likely carrier, and offers to start tracking rather than
+      saying tracking began.
+      FAIL if it says a tracking request was created or invents a status.

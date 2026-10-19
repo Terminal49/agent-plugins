@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: trade-not-enabled
+tags: [tier-t, trade, guardrail]
+expected_outcome: Stop, point to support, and invent no trade figures.
+execution:
+  prompt: "What does Fixture Furniture Co import, and from where?"
+  max_turns: 8
+  timeout_seconds: 180
+  allowed_tools: [Skill]
+graders:
+  - name: skill-fired
+    type: tool_used
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?trade-intelligence"'
+    arm: with-only
+  - name: not-enabled-answer
+    type: llm
+    criteria: |
+      PASS if the answer says trade intelligence is not enabled for the account
+      and tells the user to contact support@terminal49.com, with no volumes,
+      countries, or products for the company.
+      FAIL if it gives any import figures, origin countries, or products, or
+      asks for an API key.
