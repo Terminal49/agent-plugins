@@ -62,7 +62,7 @@ Most answers take two to five calls.
    forwarder, or keeping its name off the records. Merge carrier spelling
    variants before computing shares.
 4. **Answer first.** Lead with the takeaway in one to three sentences, then a
-   compact table. Round numbers (87k containers, $290M est.), name the period,
+   compact table. Round numbers (87k containers, USD 290M est.), name the period,
    and keep only the caveats that change the conclusion.
 
 `references/data-guide.md` explains what the data covers, the filters and
