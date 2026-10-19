@@ -100,7 +100,7 @@ account with trade intelligence enabled.
 ├── .claude-plugin/marketplace.json   # Claude Code and Copilot marketplace
 ├── .cursor-plugin/marketplace.json   # Cursor marketplace
 ├── openai/review.json                # OpenAI directory review cases, merged into the ZIP
-├── openai/listing.json               # OpenAI package name, version, and category for the existing plugin
+├── openai/listing.json               # OpenAI package name, version, category, and MCP URL for the existing plugin
 ├── scripts/
 │   ├── build-openai-zip.mjs          # Builds the OpenAI directory ZIP
 │   └── validate.mjs
