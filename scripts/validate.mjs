@@ -285,9 +285,15 @@ for (const file of pluginFiles) {
   const path = relative(root, file);
   const stats = await lstat(file);
   if (stats.isSymbolicLink()) errors.push(`${path} is a symbolic link; commit a regular file`);
-  if (!imageExtensions.has(extname(file)) && stats.size > 256 * 1024) errors.push(`${path} is larger than 256 KiB`);
+  if (stats.size > 256 * 1024) errors.push(`${path} is larger than 256 KiB`);
   if (/(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/.test(path)) errors.push(`${path} is a system file`);
-  if (!imageExtensions.has(extname(file)) && credentialRead.test(await readFile(file, "utf8"))) {
+  if (imageExtensions.has(extname(file))) continue;
+  const bytes = await readFile(file);
+  if (bytes.includes(0)) {
+    errors.push(`${path} is a binary file; only images may be binary`);
+    continue;
+  }
+  if (credentialRead.test(bytes.toString("utf8"))) {
     errors.push(`${path} reads a credential from the user's machine; use the MCP server's OAuth connection instead`);
   }
 }
