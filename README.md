@@ -100,6 +100,7 @@ account with trade intelligence enabled.
 ├── .claude-plugin/marketplace.json   # Claude Code and Copilot marketplace
 ├── .cursor-plugin/marketplace.json   # Cursor marketplace
 ├── openai/review.json                # OpenAI directory review cases, merged into the ZIP
+├── openai/listing.json               # OpenAI package name and version for uploads to the existing plugin
 ├── scripts/
 │   ├── build-openai-zip.mjs          # Builds the OpenAI directory ZIP
 │   └── validate.mjs
@@ -134,7 +135,7 @@ Requires Node.js 22 or newer.
 
 ```sh
 npm run validate
-npm run build:openai-zip   # writes dist/terminal49-openai-<version>.zip
+npm run build:openai-zip   # writes dist/terminal49-openai-<openai version>.zip
 ```
 
 CI runs the same validation on every push and pull request via
