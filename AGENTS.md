@@ -12,9 +12,11 @@ This is a public, cross-platform plugin marketplace for Terminal49.
   resource identifier.
 - Do not ask users to paste credentials into chat. Let the client initiate its
   OAuth connection flow.
-- The `trade-intelligence` skill reads a Terminal49 API key that the user saves
-  in their own terminal (`T49_API_KEY` or `~/.t49_api_key`). Never put a real
-  key in examples, logs, or chat.
+- Nothing in `plugins/terminal49` may read a credential from the user's
+  machine (environment variables or home-directory files). Every Terminal49
+  call goes through the MCP server's OAuth connection. The Anthropic directory
+  holds plugins that read local credentials for review, and `npm run validate`
+  rejects them.
 
 ## Shared source of truth
 
@@ -22,9 +24,13 @@ This is a public, cross-platform plugin marketplace for Terminal49.
   guidance for all clients:
   - `container-tracking/SKILL.md` covers container and shipment questions with
     the Terminal49 MCP tools.
-  - `trade-intelligence/SKILL.md` covers US import market research through the
-    Terminal49 REST API, using its bundled `scripts/ti.py` client and
-    `references/api.md`.
+  - `record-updates/SKILL.md` covers the `set_party_role` and
+    `set_custom_field` write tools.
+  - `trade-intelligence/SKILL.md` covers US import market research with the
+    Terminal49 MCP trade intelligence tools.
+- Base skill guidance on the production MCP server's tool descriptions and
+  server instructions in
+  [Terminal49/API](https://github.com/Terminal49/API) (`packages/mcp/src`).
 - `plugins/terminal49/.mcp.json` and `plugins/terminal49/mcp.json` are the MCP
   adapters for Claude/Codex and Cursor respectively. Keep their server entries
   identical.
@@ -47,3 +53,14 @@ client is installed, also use its native validator before publishing.
 
 Bump the version in all three plugin manifests and both versioned marketplace
 files for every release. Keep releases small and document user-visible changes.
+
+## Directory submissions
+
+- Anthropic's directory reads `plugins/terminal49` from this repository and
+  publishes each new commit on the tracked branch after its checks. Keep
+  `plugins/terminal49` free of symbolic links, binary files other than images,
+  and files over 256 KiB.
+- The OpenAI plugin directory takes a ZIP. Build it with
+  `npm run build:openai-zip`, which writes `dist/terminal49-openai-<version>.zip`
+  from the Codex manifest, the skills, and the icon. Upload a new ZIP whenever
+  the skills or listing metadata change.

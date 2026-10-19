@@ -13,19 +13,19 @@ This marketplace currently publishes one plugin:
 ## What the plugin provides
 
 - OAuth connection to `https://mcp.terminal49.com`
-- A shared `container-tracking` skill for choosing and sequencing MCP tools
-- Guidance for status, pickup readiness, holds, ETAs, routes, delays, and
-  demurrage-risk questions
-- Guardrails around tracking-request creation, credentials, dates, and missing
-  data
+- A `container-tracking` skill for choosing and sequencing MCP tools: status,
+  pickup readiness, holds, ETAs, routes, delays, demurrage risk, fleet counts
+  that match the Terminal49 dashboard, customer filters, and documents
+- A `record-updates` skill for changing the drayage carrier, other parties, and
+  custom fields, only when you ask
 - A `trade-intelligence` skill for competitor research, sourcing, and market
   trends from US ocean import bill-of-lading records since 2022 (for accounts
   with trade intelligence enabled)
+- Guardrails around tracking requests and other writes, credentials, untrusted
+  document text, dates, and missing data
 
-The plugin does not contain API keys or customer data. Container tracking
-authenticates through the MCP client's OAuth flow. Trade intelligence currently
-uses a Terminal49 API key that you save in your own terminal; see the
-[plugin README](plugins/terminal49/README.md#trade-intelligence-api-key).
+The plugin contains no API keys, scripts, or customer data. Every Terminal49
+call goes through the MCP client's OAuth flow.
 
 ## Install
 
@@ -83,7 +83,8 @@ After connecting your Terminal49 account, ask your agent:
 - “Where is container ABCU1234567?”
 - “Is this container ready for pickup, and are there any holds?”
 - “Explain what changed in this container's journey.”
-- “Show containers updated since yesterday and group them by status.”
+- “How many of my containers are ready for pickup?”
+- “Set the drayage carrier on ABCU1234567 to Example Trucking.”
 - “Who are the largest US importers of office chairs, and where do they source
   them?”
 
@@ -98,6 +99,10 @@ account with trade intelligence enabled.
 ├── .agents/plugins/marketplace.json  # Codex marketplace
 ├── .claude-plugin/marketplace.json   # Claude Code and Copilot marketplace
 ├── .cursor-plugin/marketplace.json   # Cursor marketplace
+├── openai/review.json                # OpenAI directory review cases, merged into the ZIP
+├── scripts/
+│   ├── build-openai-zip.mjs          # Builds the OpenAI directory ZIP
+│   └── validate.mjs
 └── plugins/terminal49/
     ├── .claude-plugin/plugin.json
     ├── .codex-plugin/plugin.json
@@ -105,13 +110,18 @@ account with trade intelligence enabled.
     ├── .mcp.json                     # Claude and Codex MCP adapter
     ├── mcp.json                      # Cursor MCP adapter
     ├── README.md
-    ├── assets/logo.svg               # Referenced by the Cursor manifest
+    ├── assets/
+    │   ├── icon.svg                  # Square icon for the directories
+    │   └── logo.svg                  # Referenced by the Cursor manifest
+    ├── evals/                        # Mocked behavioral evals
     └── skills/
-        ├── container-tracking/SKILL.md
+        ├── container-tracking/
+        │   ├── SKILL.md
+        │   └── references/           # Fleet queries and documents
+        ├── record-updates/SKILL.md
         └── trade-intelligence/
             ├── SKILL.md
-            ├── references/api.md     # Endpoint parameters and fields
-            └── scripts/ti.py         # Python 3 API client, no dependencies
+            └── references/data-guide.md
 ```
 
 The skills are shared. Each platform-specific manifest and MCP file is a thin
@@ -124,6 +134,7 @@ Requires Node.js 22 or newer.
 
 ```sh
 npm run validate
+npm run build:openai-zip   # writes dist/terminal49-openai-<version>.zip
 ```
 
 CI runs the same validation on every push and pull request via
