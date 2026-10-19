@@ -192,8 +192,8 @@ try {
 
 try {
   const skill = await readFile(resolve(root, paths.tradeSkill), "utf8");
-  if (!/never ask the user to paste an API key/i.test(skill)) {
-    errors.push("trade-intelligence skill must forbid pasting API keys into chat");
+  if (!/never ask the user for sign-in details/i.test(skill)) {
+    errors.push("trade-intelligence skill must forbid asking for sign-in details in chat");
   }
   if (!skill.includes("support@terminal49.com")) {
     errors.push("trade-intelligence skill must send accounts without access to support@terminal49.com");

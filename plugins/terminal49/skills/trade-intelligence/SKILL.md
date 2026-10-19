@@ -18,7 +18,8 @@ the answer and the few numbers that support it, not a data dump.
 ## Access
 
 The trade tools use the same OAuth connection as the other Terminal49 tools.
-Never ask the user to paste an API key, access token, or password into chat.
+Sign-in happens in the browser, so never ask the user for sign-in details in
+chat.
 
 Trade intelligence is enabled per account. If a tool says it is not enabled,
 tell the user to contact support@terminal49.com to turn it on. Don't retry, and
@@ -51,7 +52,7 @@ Most answers take two to five calls.
      `get_trade_trends` with a `company` filter for this: it matches every
      company whose name contains the text.
    - History starts in January 2022. `get_trade_trends` defaults to the last 24
-     months; pass `since` for a longer view, and don't describe the default
+     months; set `since` for a longer view, and don't describe the default
      window as the start of the data.
    - Rankings don't say who is a forwarder. When it matters (it usually does in
      "who imports X"), check the top names with `search_importers` and weigh
