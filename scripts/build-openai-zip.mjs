@@ -12,7 +12,7 @@ const readJson = async (path) => JSON.parse(await readFile(path, "utf8"));
 
 const manifest = await readJson(join(pluginDir, ".codex-plugin/plugin.json"));
 const mcp = await readJson(join(pluginDir, ".mcp.json"));
-const { review } = await readJson(resolve(root, "openai/review.json"));
+const { review, publication } = await readJson(resolve(root, "openai/review.json"));
 
 const stage = resolve(root, "dist/terminal49-openai");
 const zipPath = resolve(root, `dist/terminal49-openai-${manifest.version}.zip`);
@@ -27,7 +27,7 @@ async function writeStaged(path, contents) {
 const icons = new Set([manifest.interface.logo, manifest.interface.composerIcon]);
 await writeStaged(
   ".codex-plugin/plugin.json",
-  `${JSON.stringify({ ...manifest, extensions: { "com.openai": { review } } }, null, 2)}\n`,
+  `${JSON.stringify({ ...manifest, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
 );
 // The Codex-format .mcp.json in the submission guide names only the url.
 const servers = Object.fromEntries(Object.entries(mcp.mcpServers).map(([name, { url }]) => [name, { url }]));
@@ -69,6 +69,8 @@ const cases = review?.test_cases ?? {};
 if (cases.positive?.length !== 5 || cases.negative?.length !== 3) {
   errors.push("initial MCP review needs exactly five positive and three negative test cases");
 }
+if (typeof review?.commerce !== "boolean") errors.push("review.commerce must be true or false");
+if (!publication?.release_notes) errors.push("publication.release_notes is required");
 
 if (errors.length > 0) {
   console.error("OpenAI ZIP check failed:\n");
