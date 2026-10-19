@@ -20,3 +20,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run validate
+      - name: Validate with Claude Code
+        run: |
+          npx -y @anthropic-ai/claude-code@2.1.292 plugin validate --strict plugins/terminal49
+          npx -y @anthropic-ai/claude-code@2.1.292 plugin validate --strict .
