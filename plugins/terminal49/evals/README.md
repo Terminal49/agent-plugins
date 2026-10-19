@@ -28,7 +28,7 @@ descriptions and input schemas. Refresh it when the server's tools change:
 
 ```sh
 gh api repos/Terminal49/API/contents/packages/mcp/src/__snapshots__/tools-list.json \
-  -H "Accept: application/vnd.github.raw" | jq -c .result > evals/mocks/terminal49/_tools.json
+  -H "Accept: application/vnd.github.raw" | jq -c '.result | walk(if type == "object" then del(."$schema") else . end)' > evals/mocks/terminal49/_tools.json
 ```
 
 ## Prerequisites
