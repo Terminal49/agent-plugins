@@ -33,7 +33,10 @@ await writeStaged(
   `${JSON.stringify({ ...manifest, name: listing.name, version: listing.version, interface: { ...manifest.interface, category: listing.category }, extensions: { "com.openai": { review, publication } } }, null, 2)}\n`,
 );
 // The Codex-format .mcp.json in the submission guide names only the url.
-const servers = Object.fromEntries(Object.entries(mcp.mcpServers).map(([name, { url }]) => [name, { url }]));
+// OpenAI requires the ZIP's MCP URL to match the existing app's URL exactly.
+const servers = Object.fromEntries(
+  Object.entries(mcp.mcpServers).map(([name, { url }]) => [name, { url: listing.mcpUrl ?? url }]),
+);
 await writeStaged(".mcp.json", `${JSON.stringify({ mcpServers: servers }, null, 2)}\n`);
 await cp(join(pluginDir, "skills"), join(stage, "skills"), { recursive: true });
 for (const icon of icons) await cp(join(pluginDir, icon), join(stage, icon));
@@ -68,6 +71,9 @@ for (const file of zipped) {
 }
 if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(listing.name ?? "") || listing.name.length > 64) {
   errors.push("openai/listing.json name must be the OpenAI package name");
+}
+if (listing.mcpUrl !== undefined && !/^https:\/\/mcp\.terminal49\.com(\/[a-z]*)?$/.test(listing.mcpUrl)) {
+  errors.push("openai/listing.json mcpUrl must be a Terminal49 MCP https URL");
 }
 if (!listing.category) errors.push("openai/listing.json category must match the dashboard category title");
 if (!/^\d+\.\d+\.\d+$/.test(listing.version ?? "")) errors.push("openai/listing.json version must be semver");
