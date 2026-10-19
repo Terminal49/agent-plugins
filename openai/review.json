@@ -3,48 +3,48 @@
     "test_cases": {
       "positive": [
         {
-          "description": "List the containers that are ready for pickup with the dashboard definition",
-          "prompt": "Which of my containers are ready for pickup?",
-          "tools_triggered": "list_containers",
-          "expected_behavior": "Filters by current status available and reports the total for that set from meta.total, not the number of rows on one page, then lists the first containers with their terminals and last free days."
+          "description": "Find a tracked container by container number.",
+          "prompt": "Find TGBU8848518 in my connected Terminal49 account and summarize its current status.",
+          "tools_triggered": "search_container",
+          "expected_behavior": "If the container exists, returns matching identifiers, status, shipping line (COSU), and available terminal information. Otherwise, clearly reports zero matches without inventing data."
         },
         {
-          "description": "List the containers that need attention",
-          "prompt": "Which of my containers need attention right now?",
-          "tools_triggered": "list_containers",
-          "expected_behavior": "Filters by requires_attention true sorted by attention priority, reports the total, and ranks the containers by last free day pressure, holds, and dwell without inventing fees."
-        },
-        {
-          "description": "Break down containers by terminal",
-          "prompt": "Break down my containers by terminal.",
+          "description": "Count containers by status.",
+          "prompt": "How many of my containers are in each status right now?",
           "tools_triggered": "summarize_containers",
-          "expected_behavior": "Groups actively tracked containers by POD terminal and reports the count for each terminal and the overall total."
+          "expected_behavior": "Returns counts of actively tracked containers grouped by current status and states when the count is truncated. Reports the total when known; otherwise, explains that the total is unknown and reports how many containers were counted."
         },
         {
-          "description": "Identify a number without tracking it",
-          "prompt": "What kind of number is MEDU1234562, which carrier is it, and am I already tracking it?",
-          "tools_triggered": "identify_tracking_number",
-          "expected_behavior": "Reports the number type, whether the format and check digit are valid, the predicted carrier and its confidence, and whether the account already tracks it. It does not create a tracking request."
+          "description": "Find a company and list its containers.",
+          "prompt": "Find the customer named Acme in my Terminal49 account and show their containers.",
+          "tools_triggered": "list_parties, list_containers",
+          "expected_behavior": "Looks up matching companies and their IDs, then lists containers filtered to that customer. If no company matches, says so instead of listing unfiltered containers."
         },
         {
-          "description": "Find the largest importers of a product",
-          "prompt": "Who are the largest US importers of office chairs?",
-          "tools_triggered": "search_commodities, rank_importers",
-          "expected_behavior": "Resolves office chairs to an HS4 code, names the code used, ranks importers by containers over full months, and notes that forwarders can appear in the list. The test account needs trade intelligence enabled."
+          "description": "List the 10 most recently updated shipments without nested containers.",
+          "prompt": "Show my 10 most recently updated shipments. Don’t include nested containers.",
+          "tools_triggered": "list_shipments",
+          "expected_behavior": "Returns up to 10 of the most recently updated shipments with a page size of 10, include_containers=false, no carrier, status, or port filters, and no nested containers. Mentions pagination if present."
+        },
+        {
+          "description": "Create a tracking request for a container that is not already tracked.",
+          "prompt": "Track TGBU8848518 with carrier SCAC COSU in my Terminal49 account.",
+          "tools_triggered": "track_container",
+          "expected_behavior": "Returns the existing matching container, creates a tracking request, or clearly reports that no request was created because the number/carrier could not be resolved. It must not claim the container exists unless the account response confirms it."
         }
       ],
       "negative": [
         {
-          "description": "Vague bulk tracking request without identifiers",
-          "prompt": "Track everything."
+          "description": "Do not trigger for an unrelated weather request.",
+          "prompt": "What will the weather be in Los Angeles tomorrow?"
         },
         {
-          "description": "Request to delete records, which no tool supports",
-          "prompt": "Delete all of my shipments from Terminal49."
+          "description": "Do not trigger for freight-rate purchasing or quoting.",
+          "prompt": "Book the cheapest trucking rate from Los Angeles to Phoenix."
         },
         {
-          "description": "Vague bulk write without records or a value",
-          "prompt": "Change the drayage carrier on my containers."
+          "description": "Do not trigger an unsupported destructive action.",
+          "prompt": "Delete all completed shipments from my account."
         }
       ]
     },
