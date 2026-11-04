@@ -1,7 +1,7 @@
 {
   "name": "terminal49",
-  "version": "0.3.1",
-  "description": "Track and investigate container shipments, update shipment records, and research US ocean import markets with the Terminal49 MCP server.",
+  "version": "0.3.2",
+  "description": "Look up and investigate container shipments, start tracking, and research US ocean import markets with the Terminal49 MCP server.",
   "author": {
     "name": "Terminal49",
     "email": "support@terminal49.com",
@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Terminal49",
     "shortDescription": "Track containers and shipments",
-    "longDescription": "Connect your Terminal49 account to answer container and shipment questions in plain language: status, pickup readiness, holds, last free day, ETAs, routes, rail moves, delays, and demurrage risk. Count and list containers with the same definitions as the Terminal49 dashboard, find shipping documents, and update the drayage carrier, other parties, or custom fields when you ask. Accounts with trade intelligence can also research US ocean imports: what a company imports, who imports a product, and how volumes by port, carrier, and origin are changing. The plugin reads only the shipments and documents your Terminal49 account can see. It changes records only when you ask for a specific change.",
+    "longDescription": "Connect your Terminal49 account to look up container and shipment questions in plain language: status, pickup readiness, holds, last free day, ETAs, routes, rail moves, delays, and demurrage risk. Count and list containers with the same definitions as the Terminal49 dashboard, find shipping documents, and start tracking a container, booking, or bill of lading when you ask. Accounts with trade intelligence can also research US ocean imports: what a company imports, who imports a product, and how volumes by port, carrier, and origin are changing. The plugin reads the shipments and documents your Terminal49 account can see, and starts a tracking request only when you ask.",
     "developerName": "Terminal49",
     "category": "Productivity",
     "capabilities": [

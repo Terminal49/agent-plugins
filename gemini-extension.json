@@ -1,0 +1,11 @@
+{
+  "name": "terminal49",
+  "version": "0.3.2",
+  "description": "Terminal49 container and shipment tracking: look up containers by container, booking or bill of lading number, check status, milestones, ETAs, holds and last free day, and start new tracking.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "terminal49": {
+      "httpUrl": "https://mcp.terminal49.com"
+    }
+  }
+}
