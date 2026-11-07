@@ -19,11 +19,6 @@
     "supply-chain",
     "trade-intelligence"
   ],
-  "icon": "./assets/icon.png",
-  "documentationUrl": "https://terminal49.com/docs/mcp/home",
-  "supportUrl": "https://www.terminal49.com/contact",
-  "privacyPolicyUrl": "https://www.terminal49.com/privacy",
-  "termsOfServiceUrl": "https://www.terminal49.com/terms",
   "skills": "./skills/",
   "mcpServers": "./.mcp.json"
 }

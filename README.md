@@ -115,7 +115,7 @@ account with trade intelligence enabled.
     ├── mcp.json                      # Cursor MCP adapter
     ├── README.md
     ├── assets/
-    │   ├── icon.png                  # Square icon for the directories
+    │   ├── icon.png                  # Square icon for Codex and the OpenAI directory
     │   └── logo.png                  # Referenced by the Cursor manifest
     └── skills/
         ├── container-tracking/

@@ -235,22 +235,17 @@ for (const skillPath of skillPaths) {
   }
 }
 
-// Anthropic directory listing fields: https://code.claude.com/docs/en/plugins-reference#directory-listing-fields
-const listingFields = {
-  supportUrl: "supportURL",
-  privacyPolicyUrl: "privacyPolicyURL",
-  termsOfServiceUrl: "termsOfServiceURL",
-};
-for (const field of ["documentationUrl", ...Object.keys(listingFields)]) {
-  if (!/^https:\/\//.test(claudePlugin?.[field] ?? "")) errors.push(`Claude plugin ${field} must be an https URL`);
+// The Anthropic directory warns on every plugin.json field that Claude Code does not read,
+// listing fields included. Keep the Claude manifest to fields Claude Code loads so the
+// directory report has no warnings. The README links the privacy policy, terms, and docs.
+for (const field of ["icon", "documentationUrl", "supportUrl", "privacyPolicyUrl", "termsOfServiceUrl"]) {
+  if (claudePlugin && field in claudePlugin) errors.push(`Claude plugin.json must not set ${field}; the directory warns on it`);
 }
-for (const [claudeField, codexField] of Object.entries(listingFields)) {
-  if (codexPlugin?.interface?.[codexField] !== claudePlugin?.[claudeField]) {
-    errors.push(`Codex interface.${codexField} must match Claude ${claudeField}`);
-  }
+for (const field of ["supportURL", "privacyPolicyURL", "termsOfServiceURL"]) {
+  if (!/^https:\/\//.test(codexPlugin?.interface?.[field] ?? "")) errors.push(`Codex interface.${field} must be an https URL`);
 }
-for (const icon of [claudePlugin?.icon, codexPlugin?.interface?.logo, codexPlugin?.interface?.composerIcon]) {
-  if (!icon) errors.push("Claude icon and Codex logo and composerIcon are required");
+for (const icon of [codexPlugin?.interface?.logo, codexPlugin?.interface?.composerIcon]) {
+  if (!icon) errors.push("Codex logo and composerIcon are required");
   else await requireFile(`${paths.pluginDir}/${icon}`);
 }
 
