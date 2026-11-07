@@ -1,7 +1,7 @@
 {
   "name": "terminal49",
   "displayName": "Terminal49",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Look up and investigate container shipments, start tracking, and research US ocean import markets with the Terminal49 MCP server.",
   "author": {
     "name": "Terminal49",

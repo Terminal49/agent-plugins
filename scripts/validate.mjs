@@ -236,10 +236,15 @@ for (const skillPath of skillPaths) {
 }
 
 // The Anthropic directory warns on every plugin.json field that Claude Code does not read,
-// listing fields included. Keep the Claude manifest to fields Claude Code loads so the
-// directory report has no warnings. The README links the privacy policy, terms, and docs.
-for (const field of ["icon", "documentationUrl", "supportUrl", "privacyPolicyUrl", "termsOfServiceUrl"]) {
+// listing fields included. Keep the Claude manifest to fields Claude Code loads, plus the
+// required privacyPolicyUrl. The README links the privacy policy, terms, and docs.
+for (const field of ["icon", "documentationUrl", "supportUrl", "termsOfServiceUrl"]) {
   if (claudePlugin && field in claudePlugin) errors.push(`Claude plugin.json must not set ${field}; the directory warns on it`);
+}
+// The directory requires a privacy policy link, so this one listing field stays.
+if (!/^https:\/\//.test(claudePlugin?.privacyPolicyUrl ?? "")) errors.push("Claude plugin privacyPolicyUrl must be an https URL");
+if (claudePlugin?.privacyPolicyUrl !== codexPlugin?.interface?.privacyPolicyURL) {
+  errors.push("Claude privacyPolicyUrl must match Codex interface.privacyPolicyURL");
 }
 for (const field of ["supportURL", "privacyPolicyURL", "termsOfServiceURL"]) {
   if (!/^https:\/\//.test(codexPlugin?.interface?.[field] ?? "")) errors.push(`Codex interface.${field} must be an https URL`);
