@@ -62,7 +62,7 @@ const allowed = [
   /^\.codex-plugin\/plugin\.json$/,
   /^\.mcp\.json$/,
   /^README\.md$/,
-  /^assets\/[^/]+\.svg$/,
+  /^assets\/[^/]+\.(svg|png)$/,
   /^skills\/[a-z0-9-]+\/SKILL\.md$/,
   /^skills\/[a-z0-9-]+\/references\/[^/]+\.md$/,
 ];

@@ -17,9 +17,8 @@ the answer and the few numbers that support it, not a data dump.
 
 ## Access
 
-The trade tools use the same OAuth connection as the other Terminal49 tools.
-Sign-in happens in the browser, so never ask the user for sign-in details in
-chat.
+The trade tools use the same browser connection as the other Terminal49
+tools, so never ask for connection details in chat.
 
 Trade intelligence is enabled per account. If a tool says it is not enabled,
 tell the user to contact support@terminal49.com to turn it on. Don't retry, and

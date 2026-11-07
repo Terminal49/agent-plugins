@@ -1,5 +1,6 @@
 .DS_Store
 node_modules/
 npm-debug.log*
-plugins/terminal49/evals/results/
+evals/terminal49/results/
+.eval-stage/
 dist/

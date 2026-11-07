@@ -1,7 +1,7 @@
 {
   "name": "terminal49",
   "displayName": "Terminal49",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Look up and investigate container shipments, start tracking, and research US ocean import markets with the Terminal49 MCP server.",
   "author": {
     "name": "Terminal49",
@@ -11,7 +11,7 @@
   "homepage": "https://terminal49.com",
   "repository": "https://github.com/Terminal49/agent-plugins",
   "license": "Apache-2.0",
-  "logo": "assets/logo.svg",
+  "logo": "assets/logo.png",
   "keywords": [
     "container-tracking",
     "logistics",
