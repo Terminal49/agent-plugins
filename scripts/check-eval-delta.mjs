@@ -4,7 +4,7 @@ import process from "node:process";
 const resultPath = process.argv[2];
 
 if (!resultPath) {
-  console.error("Usage: node evals/check-delta.mjs <aggregate-result.json>");
+  console.error("Usage: node scripts/check-eval-delta.mjs <aggregate-result.json>");
   process.exit(2);
 }
 

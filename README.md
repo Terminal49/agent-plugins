@@ -103,6 +103,7 @@ account with trade intelligence enabled.
 ├── openai/listing.json               # OpenAI package name, version, category, and MCP URL for the existing plugin
 ├── scripts/
 │   ├── build-openai-zip.mjs          # Builds the OpenAI directory ZIP
+│   ├── check-eval-delta.mjs          # Checks that every eval case has a positive delta
 │   └── validate.mjs
 └── plugins/terminal49/
     ├── .claude-plugin/plugin.json
