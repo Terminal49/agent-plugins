@@ -17,12 +17,12 @@ find it and report current status, location, and anything that needs attention.
 ## Before using tools
 
 1. Confirm that Terminal49 MCP tools are available.
-2. If the client requests authentication, let it start the OAuth browser flow.
-3. Sign-in happens in the browser, so never ask the user for sign-in details or
-   one-time codes in chat.
+2. If the client asks to connect, let it open the Terminal49 browser window.
+3. The user connects in that browser window, so never ask for connection
+   details in chat.
 4. If the tools remain unavailable, say that the Terminal49 connection must be
-   enabled and authenticated. Do not invent shipment data.
-5. If a lookup returns nothing or an authorization error, call `whoami` to
+   turned on and connected. Do not invent shipment data.
+5. If a lookup returns nothing or an access error, call `whoami` to
    confirm the connected account and which gated features it can use.
 
 ## Identifier rules

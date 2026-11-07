@@ -101,9 +101,11 @@ account with trade intelligence enabled.
 ├── .cursor-plugin/marketplace.json   # Cursor marketplace
 ├── openai/review.json                # OpenAI directory review cases, merged into the ZIP
 ├── openai/listing.json               # OpenAI package name, version, category, and MCP URL for the existing plugin
+├── evals/terminal49/                 # Mocked behavioral evals, kept out of the shipped plugin
 ├── scripts/
 │   ├── build-openai-zip.mjs          # Builds the OpenAI directory ZIP
 │   ├── check-eval-delta.mjs          # Checks that every eval case has a positive delta
+│   ├── eval.mjs                      # Runs the evals against a staged copy of the plugin
 │   └── validate.mjs
 └── plugins/terminal49/
     ├── .claude-plugin/plugin.json
@@ -113,9 +115,8 @@ account with trade intelligence enabled.
     ├── mcp.json                      # Cursor MCP adapter
     ├── README.md
     ├── assets/
-    │   ├── icon.svg                  # Square icon for the directories
-    │   └── logo.svg                  # Referenced by the Cursor manifest
-    ├── evals/                        # Mocked behavioral evals
+    │   ├── icon.png                  # Square icon for the directories
+    │   └── logo.png                  # Referenced by the Cursor manifest
     └── skills/
         ├── container-tracking/
         │   ├── SKILL.md

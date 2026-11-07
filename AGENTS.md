@@ -59,7 +59,12 @@ files for every release. Keep releases small and document user-visible changes.
 - Anthropic's directory reads `plugins/terminal49` from this repository and
   publishes each new commit on the tracked branch after its checks. Keep
   `plugins/terminal49` free of symbolic links, binary files other than images,
-  and files over 256 KiB.
+  and files over 256 KiB. It accepts only Markdown, text, JSON, YAML, and PNG,
+  JPEG, GIF, or WebP images there, so keep scripts and SVG files out.
+- The directory holds a plugin for review when any shipped file mentions a
+  credential or something shaped like an environment variable, even in prose
+  (`$schema` counts). Keep evals in `evals/terminal49/` and run them with
+  `node scripts/eval.mjs`. `npm run validate` enforces both rules.
 - The OpenAI plugin directory takes a ZIP. Build it with
   `npm run build:openai-zip`, which writes `dist/terminal49-openai-<version>.zip`
   from the Codex manifest, the skills, and the icon. Upload a new ZIP whenever

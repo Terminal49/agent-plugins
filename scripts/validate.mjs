@@ -192,8 +192,8 @@ try {
 
 try {
   const skill = await readFile(resolve(root, paths.tradeSkill), "utf8");
-  if (!/never ask the user for sign-in details/i.test(skill)) {
-    errors.push("trade-intelligence skill must forbid asking for sign-in details in chat");
+  if (!/never ask for connection details in\s+chat/i.test(skill)) {
+    errors.push("trade-intelligence skill must forbid asking for connection details in chat");
   }
   if (!skill.includes("support@terminal49.com")) {
     errors.push("trade-intelligence skill must send accounts without access to support@terminal49.com");
@@ -266,15 +266,17 @@ if (prompts.length > 3 || prompts.some((prompt) => prompt.length > 128)) {
 }
 
 // Directory checks on the plugin folder: https://claude.com/docs/plugins/pre-submission-checklist
-const imageExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"]);
-const scriptExtensions = new Set([".js", ".mjs", ".cjs", ".ts", ".sh", ".py"]);
-const credentialRead = /T49_API_KEY|\.t49_api_key|process\.env|os\.environ|getenv\(/;
+// The directory accepts only these file types from organizations that are not Verified.
+const textExtensions = new Set([".md", ".txt", ".json", ".yaml", ".yml"]);
+const imageExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
+// The directory holds any mention of a credential or an environment variable for review,
+// even in prose, so the shipped folder must not name one.
+const credentialWords = /api[ _-]?keys?|tokens?\b|passwords?|secrets?\b|credentials?|environment variables?|\$\{?[A-Z][A-Z0-9_]{2,}|process\.env|os\.environ|getenv\(/i;
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const path = resolve(directory, entry.name);
-    if (entry.name === "results" && directory.endsWith("evals")) continue;
     if (entry.isDirectory()) files.push(...(await walk(path)));
     else files.push(path);
   }
@@ -284,24 +286,21 @@ const pluginFiles = await walk(resolve(root, paths.pluginDir));
 if (pluginFiles.length > 512) errors.push(`plugin folder has ${pluginFiles.length} files; the directory holds more than 512 for review`);
 for (const file of pluginFiles) {
   const path = relative(root, file);
+  const extension = extname(file).toLowerCase();
   const stats = await lstat(file);
   if (stats.isSymbolicLink()) errors.push(`${path} is a symbolic link; commit a regular file`);
   if (stats.size > 256 * 1024) errors.push(`${path} is larger than 256 KiB`);
-  if (/(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/.test(path)) errors.push(`${path} is a system file`);
-  if (scriptExtensions.has(extname(file))) errors.push(`${path} is a script; keep scripts outside the plugin folder`);
-  if (imageExtensions.has(extname(file))) continue;
-  const bytes = await readFile(file);
-  if (bytes.includes(0)) {
-    errors.push(`${path} is a binary file; only images may be binary`);
+  if (imageExtensions.has(extension)) continue;
+  if (!textExtensions.has(extension)) {
+    errors.push(`${path} is not Markdown, text, JSON, YAML, or a PNG, JPEG, GIF, or WebP image; the directory refuses it`);
     continue;
   }
-  // The directory checker reads credential-named output fields as a credential read.
-  if (path.includes("/evals/mocks/") && bytes.includes("outputSchema")) {
-    errors.push(`${path} keeps tool output schemas; strip outputSchema from eval mocks`);
-  }
-  if (credentialRead.test(bytes.toString("utf8"))) {
-    errors.push(`${path} reads a credential from the user's machine; use the MCP server's OAuth connection instead`);
-  }
+  const bytes = await readFile(file);
+  const text = bytes.toString("utf8");
+  if (bytes.includes(0) || Buffer.from(text, "utf8").compare(bytes) !== 0) errors.push(`${path} must be UTF-8 text with no NUL bytes`);
+  if (text.startsWith("#!")) errors.push(`${path} starts with #!; the directory refuses it`);
+  const match = text.match(credentialWords);
+  if (match) errors.push(`${path} mentions "${match[0]}"; the directory holds plugins that mention credentials`);
 }
 
 if (errors.length > 0) {

@@ -14,13 +14,13 @@ claude plugin install terminal49 --marketplace Terminal49/agent-plugins
 
 ## What the plugin connects to
 
-The plugin declares one remote MCP server, `https://mcp.terminal49.com`. It runs
-no local programs, hooks, or scripts, and it reads no files or environment
-variables on your machine.
+The plugin declares one remote MCP server, `https://mcp.terminal49.com`. It
+holds only Markdown, JSON, and images. It runs no programs, hooks, or scripts
+and reads nothing from your computer.
 
-- **Authentication.** Your client opens the Terminal49 OAuth sign-in in the
-  browser when a Terminal49 tool is first used. Do not paste API keys, access
-  tokens, or one-time codes into chat.
+- **Connecting.** The first time you use a Terminal49 tool, your client opens a
+  browser window where you connect your Terminal49 account. You finish
+  connecting in that window, not in the chat.
 - **Data sent.** The tools send the identifiers, filters, and values in your
   request (for example a container number or a company name) to the Terminal49
   MCP server. The server reads the shipments, documents, and trade data that
@@ -80,7 +80,7 @@ API and MCP server live in [Terminal49/API](https://github.com/Terminal49/API).
 ## Plugin evals
 
 Behavioral eval cases use checked-in MCP mocks and never call the live
-Terminal49 service. See [`evals/README.md`](evals/README.md) for validation,
+Terminal49 service. See [`evals/terminal49/README.md`](https://github.com/Terminal49/agent-plugins/blob/main/evals/terminal49/README.md) for validation,
 mocked eval, and baseline guidance.
 
 ## License

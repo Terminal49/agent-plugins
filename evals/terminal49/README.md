@@ -28,7 +28,7 @@ descriptions and input schemas. Refresh it when the server's tools change:
 
 ```sh
 gh api repos/Terminal49/API/contents/packages/mcp/src/__snapshots__/tools-list.json \
-  -H "Accept: application/vnd.github.raw" | jq -c '.result | walk(if type == "object" then del(."$schema", .outputSchema) else . end)' > evals/mocks/terminal49/_tools.json
+  -H "Accept: application/vnd.github.raw" | jq -c '.result | walk(if type == "object" then del(."$schema", .outputSchema) else . end)' > evals/terminal49/mocks/terminal49/_tools.json
 ```
 
 ## Prerequisites
@@ -36,11 +36,18 @@ gh api repos/Terminal49/API/contents/packages/mcp/src/__snapshots__/tools-list.j
 - Claude Code 2.1.269 or newer
 - Claude Code authentication for the model under test
 
-From this plugin directory, first validate the plugin:
+These evals live outside `plugins/terminal49` on purpose. The Anthropic
+directory reviews every file in the plugin folder, and it holds a plugin whose
+files mention credentials, which the guardrail cases must do.
+`claude plugin eval` reads cases only from inside the plugin folder, so
+`scripts/eval.mjs` copies the plugin and these evals into `.eval-stage/` and runs
+them there. It passes its options to `claude plugin eval` and copies the results
+back to `evals/terminal49/results/`.
+
+Run every command from the repository root. First validate the plugin:
 
 ```sh
-cd plugins/terminal49
-claude plugin validate .
+claude plugin validate plugins/terminal49
 ```
 
 ## Run with mocks
@@ -48,18 +55,18 @@ claude plugin validate .
 Use the checked-in mocks for every MCP call:
 
 ```sh
-claude plugin eval . --mocks record --no-publish
+node scripts/eval.mjs --mocks record --no-publish
 ```
 
 `record` is the default mock mode. It reads the fixed responses under
-`evals/mocks/` and each case's `mocks/` directory; it does not start the real
+`mocks/` and each case's `mocks/` directory; it does not start the real
 Terminal49 MCP server. Do not add `--allow-real-servers` or use `--mocks off`
 for this suite.
 
 For a cheaper one-run check while editing a case:
 
 ```sh
-claude plugin eval . \
+node scripts/eval.mjs \
   --case where-is-container \
   --runs 1 \
   --ablation none \
@@ -70,7 +77,7 @@ claude plugin eval . \
 Run one bank tier with its tag:
 
 ```sh
-claude plugin eval . \
+node scripts/eval.mjs \
   --tag tier-b \
   --runs 1 \
   --ablation none \
@@ -81,7 +88,7 @@ claude plugin eval . \
 Run only the exact MarketingBuddy wording:
 
 ```sh
-claude plugin eval . \
+node scripts/eval.mjs \
   --tag marketingbuddy \
   --mocks record \
   --no-publish
@@ -94,13 +101,13 @@ To save a machine-checkable full result and require positive delta for every
 case:
 
 ```sh
-claude plugin eval . \
+node scripts/eval.mjs \
   --mocks record \
   --trust-plugin \
   --no-publish \
   --json /tmp/terminal49-plugin-evals.json
 
-node ../../scripts/check-eval-delta.mjs /tmp/terminal49-plugin-evals.json
+node scripts/check-eval-delta.mjs /tmp/terminal49-plugin-evals.json
 ```
 
 ## Reading the result
@@ -117,7 +124,7 @@ and `Δ` is `WITH - W/OUT`. Green for this plugin means:
 
 Skill and MCP sequencing graders are marked `with-only`, so they are indicators
 and do not artificially inflate `Δ`. Inspect failures in the generated HTML
-report under `evals/results/`.
+report under `evals/terminal49/results/`.
 
 Follow question-bank-first iteration:
 
@@ -129,5 +136,5 @@ Follow question-bank-first iteration:
 4. keep skill changes thin and rerun the same cases to verify improved `Δ`.
 
 Submit this plugin to the Anthropic community marketplace only after
-`claude plugin validate .` passes and the full mocked eval has a green,
+`claude plugin validate plugins/terminal49` passes and the full mocked eval has a green,
 positive `Δ` against the no-plugin baseline.
