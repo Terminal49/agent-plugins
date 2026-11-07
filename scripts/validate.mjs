@@ -267,6 +267,7 @@ if (prompts.length > 3 || prompts.some((prompt) => prompt.length > 128)) {
 
 // Directory checks on the plugin folder: https://claude.com/docs/plugins/pre-submission-checklist
 const imageExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"]);
+const scriptExtensions = new Set([".js", ".mjs", ".cjs", ".ts", ".sh", ".py"]);
 const credentialRead = /T49_API_KEY|\.t49_api_key|process\.env|os\.environ|getenv\(/;
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -287,11 +288,16 @@ for (const file of pluginFiles) {
   if (stats.isSymbolicLink()) errors.push(`${path} is a symbolic link; commit a regular file`);
   if (stats.size > 256 * 1024) errors.push(`${path} is larger than 256 KiB`);
   if (/(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/.test(path)) errors.push(`${path} is a system file`);
+  if (scriptExtensions.has(extname(file))) errors.push(`${path} is a script; keep scripts outside the plugin folder`);
   if (imageExtensions.has(extname(file))) continue;
   const bytes = await readFile(file);
   if (bytes.includes(0)) {
     errors.push(`${path} is a binary file; only images may be binary`);
     continue;
+  }
+  // The directory checker reads credential-named output fields as a credential read.
+  if (path.includes("/evals/mocks/") && bytes.includes("outputSchema")) {
+    errors.push(`${path} keeps tool output schemas; strip outputSchema from eval mocks`);
   }
   if (credentialRead.test(bytes.toString("utf8"))) {
     errors.push(`${path} reads a credential from the user's machine; use the MCP server's OAuth connection instead`);
